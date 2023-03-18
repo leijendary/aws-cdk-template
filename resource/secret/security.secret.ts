@@ -11,6 +11,10 @@ export class SecuritySecret extends Secret {
       secretName: `security-${environment}`,
       description: "Security related credentials like crypto, encryption, etc.",
       secretObjectValue: {
+        "accessToken.privateKey": SecretValue.unsafePlainText(""),
+        "accessToken.publicKey": SecretValue.unsafePlainText(""),
+        "refreshToken.privateKey": SecretValue.unsafePlainText(""),
+        "refreshToken.publicKey": SecretValue.unsafePlainText(""),
         "encrypt.key": SecretValue.unsafePlainText(""),
         "encrypt.salt": SecretValue.unsafePlainText(""),
       },
