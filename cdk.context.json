@@ -1,0 +1,10 @@
+{
+  "availability-zones:account=447382281576:region=us-west-1": [
+    "us-west-1b",
+    "us-west-1c"
+  ],
+  "availability-zones:account=653800596318:region=us-west-1": [
+    "us-west-1a",
+    "us-west-1b"
+  ]
+}
