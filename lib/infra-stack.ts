@@ -1,6 +1,7 @@
-import { Stack, StackProps } from "aws-cdk-lib";
+import { CfnOutput, Stack, StackProps } from "aws-cdk-lib";
 import { Certificate, CertificateValidation } from "aws-cdk-lib/aws-certificatemanager";
 import { Vpc } from "aws-cdk-lib/aws-ec2";
+import { AccessKey, Policy, PolicyStatement, User } from "aws-cdk-lib/aws-iam";
 import { HostedZone } from "aws-cdk-lib/aws-route53";
 import { Construct } from "constructs";
 import env from "../env";
@@ -16,6 +17,7 @@ export class InfraStack extends Stack {
   appVpc: Vpc;
   hostedZone: HostedZone;
   certificate: Certificate;
+  user: User;
 
   constructor(scope: Construct, props: InfraStackProps) {
     const { cidrBlock, domainName } = props;
@@ -28,6 +30,7 @@ export class InfraStack extends Stack {
     this.createVpc(cidrBlock);
     this.createHostedZone();
     this.createCertificate();
+    this.createUser();
   }
 
   private createVpc(cidrBlock: string) {
@@ -37,15 +40,43 @@ export class InfraStack extends Stack {
   }
 
   private createHostedZone() {
-    this.hostedZone = new HostedZone(this, `HostedZone-${this.environment}`, {
+    this.hostedZone = new HostedZone(this, `HostedZone-${environment}`, {
       zoneName: this.domainName,
     });
   }
 
   private createCertificate() {
-    this.certificate = new Certificate(this, `DomainCertificate-${this.environment}`, {
+    this.certificate = new Certificate(this, `DomainCertificate-${environment}`, {
       domainName: `*.${this.domainName}`,
       validation: CertificateValidation.fromDns(this.hostedZone),
+    });
+  }
+
+  private createUser() {
+    this.user = new User(this, `CdkUser-${environment}`, {
+      userName: `cdk-user-${environment}`,
+    });
+
+    new Policy(this, `CdkPolicy-${environment}`, {
+      policyName: "Cdk",
+      users: [this.user],
+      statements: [
+        new PolicyStatement({
+          actions: ["sts:AssumeRole"],
+          resources: ["arn:aws:iam::*:role/cdk-*"],
+        }),
+      ],
+    });
+
+    const accessKey = new AccessKey(this, `CdkUserAccessKey-${environment}`, {
+      user: this.user,
+    });
+
+    new CfnOutput(this, `CdkUserAccessKeyId-${environment}`, {
+      value: accessKey.accessKeyId,
+    });
+    new CfnOutput(this, `CdkUserAccessKeySecret-${environment}`, {
+      value: accessKey.secretAccessKey.unsafeUnwrap(),
     });
   }
 }
