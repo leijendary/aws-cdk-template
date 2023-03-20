@@ -72,7 +72,7 @@ export class InfraStack extends Stack {
       user: this.user,
     });
     
-    console.log("CDK Access Key ID", accessKey.accessKeyId);
-    console.log("CDK Secret Access Key", accessKey.secretAccessKey.unsafeUnwrap());
+    console.log("CDK User Access Key ID", accessKey.accessKeyId);
+    console.log("CDK User Secret Access Key", accessKey.secretAccessKey.unsafeUnwrap());
   }
 }
