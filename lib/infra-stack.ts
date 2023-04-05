@@ -1,4 +1,4 @@
-import { CfnOutput, Stack, StackProps } from "aws-cdk-lib";
+import { Stack, StackProps } from "aws-cdk-lib";
 import { Certificate, CertificateValidation } from "aws-cdk-lib/aws-certificatemanager";
 import { Vpc } from "aws-cdk-lib/aws-ec2";
 import { AccessKey, Policy, PolicyStatement, User } from "aws-cdk-lib/aws-iam";
@@ -58,7 +58,7 @@ export class InfraStack extends Stack {
     });
 
     new Policy(this, `CdkPolicy-${environment}`, {
-      policyName: "Cdk",
+      policyName: "CDK",
       users: [this.user],
       statements: [
         new PolicyStatement({
@@ -71,12 +71,8 @@ export class InfraStack extends Stack {
     const accessKey = new AccessKey(this, `CdkUserAccessKey-${environment}`, {
       user: this.user,
     });
-
-    new CfnOutput(this, `CdkUserAccessKeyId-${environment}`, {
-      value: accessKey.accessKeyId,
-    });
-    new CfnOutput(this, `CdkUserAccessKeySecret-${environment}`, {
-      value: accessKey.secretAccessKey.unsafeUnwrap(),
-    });
+    
+    console.log("CDK User Access Key ID", accessKey.accessKeyId);
+    console.log("CDK User Secret Access Key", accessKey.secretAccessKey.unsafeUnwrap());
   }
 }
