@@ -12,7 +12,6 @@ export class IntegrationSecret extends Secret {
       description: "Credentials for third party integrations",
       secretObjectValue: {
         "apple.clientId": SecretValue.unsafePlainText(""),
-        "facebook.clientId": SecretValue.unsafePlainText(""),
         "google.clientId": SecretValue.unsafePlainText(""),
         "kafka.username": SecretValue.unsafePlainText(""),
         "kafka.password": SecretValue.unsafePlainText(""),
