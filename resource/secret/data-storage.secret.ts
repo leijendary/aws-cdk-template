@@ -13,6 +13,8 @@ export class DataStorageSecret extends Secret {
       secretObjectValue: {
         "elasticsearch.username": SecretValue.unsafePlainText(""),
         "elasticsearch.password": SecretValue.unsafePlainText(""),
+        "kafka.username": SecretValue.unsafePlainText(""),
+        "kafka.password": SecretValue.unsafePlainText(""),
         // Non-AWS postgres database.
         "postgres.username": SecretValue.unsafePlainText(""),
         "postgres.password": SecretValue.unsafePlainText(""),

@@ -13,8 +13,6 @@ export class IntegrationSecret extends Secret {
       secretObjectValue: {
         "apple.clientId": SecretValue.unsafePlainText(""),
         "google.clientId": SecretValue.unsafePlainText(""),
-        "kafka.username": SecretValue.unsafePlainText(""),
-        "kafka.password": SecretValue.unsafePlainText(""),
       },
       removalPolicy: RemovalPolicy.RETAIN,
     });
