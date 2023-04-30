@@ -7,16 +7,14 @@ import {
   DatabaseCluster,
   DatabaseClusterEngine,
   DatabaseClusterProps,
-  DatabaseSecret,
 } from "aws-cdk-lib/aws-rds";
+import { Secret } from "aws-cdk-lib/aws-secretsmanager";
 import { Construct } from "constructs";
 import env, { isProd } from "../env";
 
 type AuroraConstructProps = {
   vpc: Vpc;
   name: string;
-  clusterIdentifier: string;
-  username: string;
   securityGroup: SecurityGroup;
 };
 
@@ -24,11 +22,11 @@ const environment = env.environment;
 
 export class AuroraConstruct extends DatabaseCluster {
   constructor(scope: Construct, id: string, props: AuroraConstructProps) {
-    const { vpc, name, clusterIdentifier, username, securityGroup } = props;
-    const databaseSecret = createSecret(scope, id, name, username);
+    const { vpc, name, securityGroup } = props;
+    const credentials = createCredentials(scope, name);
     const config: DatabaseClusterProps = {
       engine: DatabaseClusterEngine.auroraPostgres({
-        version: AuroraPostgresEngineVersion.VER_14_6,
+        version: AuroraPostgresEngineVersion.VER_15_2,
       }),
       instances: isProd() ? 2 : 1,
       instanceProps: {
@@ -39,8 +37,8 @@ export class AuroraConstruct extends DatabaseCluster {
         instanceType: new InstanceType("serverless"),
         securityGroups: [securityGroup],
       },
-      clusterIdentifier,
-      credentials: Credentials.fromSecret(databaseSecret, username),
+      clusterIdentifier: `${name}-${environment}`,
+      credentials,
       backup: {
         retention: Duration.days(7),
       },
@@ -68,9 +66,8 @@ export class AuroraConstruct extends DatabaseCluster {
   }
 }
 
-const createSecret = (scope: Construct, id: string, name: string, username: string) => {
-  return new DatabaseSecret(scope, `${id}AuroraSecret-${environment}`, {
-    secretName: `${name}-aurora-${environment}`,
-    username,
-  });
+const createCredentials = (scope: Construct, name: string) => {
+  const secret = Secret.fromSecretNameV2(scope, `AuroraSecret-${name}-${environment}`, `${name}-aurora-${environment}`);
+
+  return Credentials.fromSecret(secret);
 };

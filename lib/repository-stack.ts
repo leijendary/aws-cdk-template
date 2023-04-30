@@ -3,15 +3,23 @@ import { Construct } from "constructs";
 import { RepositoryConstruct, RepositoryConstructProps } from "../construct/repository.construct";
 import env from "../env";
 
+type Repository = RepositoryConstructProps & {
+  id: string;
+};
+
 const environment = env.environment;
-const repositories: RepositoryConstructProps[] = [
+const repositories: Repository[] = [
   {
     id: "ApiGatewayRepository",
     name: "api-gateway",
   },
   {
-    id: "IAMRepository",
+    id: "IamRepository",
     name: "iam",
+  },
+  {
+    id: "NotificationRepository",
+    name: "notification",
   },
   {
     id: "SampleRepository",
@@ -29,6 +37,6 @@ export class RepositoryStack extends Stack {
   }
 
   private create() {
-    repositories.forEach((repository) => new RepositoryConstruct(this, repository));
+    repositories.forEach(({ id, name }) => new RepositoryConstruct(this, `${id}-${environment}`, { name }));
   }
 }

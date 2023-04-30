@@ -8,8 +8,8 @@ import { Construct } from "constructs";
 import env from "../env";
 import { ApiFargateCluster } from "../resource/api.ecs";
 import { ApiLoadBalancer } from "../resource/api.load-balancer";
-import { ApiAlbSecurityGroup } from "../resource/security-group/alb.security-group";
 import { ApiGatewaySecurityGroup } from "../resource/security-group/api-gateway.security-group";
+import { ApiLoadBalancerSecurityGroup } from "../resource/security-group/api-loadbalancer.security-group";
 import { ApiSecurityGroup } from "../resource/security-group/api.security-group";
 import { EnvironmentProps } from "../types/environment";
 
@@ -23,9 +23,9 @@ type ApiStackProps = StackProps &
 const environment = env.environment;
 
 export class ApiStack extends Stack {
-  albSecurityGroup: SecurityGroup;
-  apiGatewaySecurityGroup: SecurityGroup;
-  apiSecurityGroup: SecurityGroup;
+  loadBalancerSecurityGroup: SecurityGroup;
+  gatewaySecurityGroup: SecurityGroup;
+  securityGroup: SecurityGroup;
   loadBalancer: ApplicationLoadBalancer;
   listener: ApplicationListener;
   cluster: Cluster;
@@ -36,37 +36,37 @@ export class ApiStack extends Stack {
 
     super(scope, id, props);
 
-    this.createAlbSecurityGroup(vpc);
-    this.createApiGatewaySecurityGroup(vpc);
-    this.createApiSecurityGroup(vpc);
+    this.createLoadBalancerSecurityGroup(vpc);
+    this.createGatewaySecurityGroup(vpc);
+    this.createSecurityGroup(vpc);
     this.createLoadBalancer(vpc, hostedZone, certificate);
     this.createFargateCluster(domainName, vpc);
   }
 
-  private createAlbSecurityGroup(vpc: Vpc) {
-    this.albSecurityGroup = new ApiAlbSecurityGroup(this, {
+  private createLoadBalancerSecurityGroup(vpc: Vpc) {
+    this.loadBalancerSecurityGroup = new ApiLoadBalancerSecurityGroup(this, {
       vpc,
     });
   }
 
-  private createApiGatewaySecurityGroup(vpc: Vpc) {
-    this.apiGatewaySecurityGroup = new ApiGatewaySecurityGroup(this, {
+  private createGatewaySecurityGroup(vpc: Vpc) {
+    this.gatewaySecurityGroup = new ApiGatewaySecurityGroup(this, {
       vpc,
-      peer: this.albSecurityGroup,
+      peer: this.loadBalancerSecurityGroup,
     });
   }
 
-  private createApiSecurityGroup(vpc: Vpc) {
-    this.apiSecurityGroup = new ApiSecurityGroup(this, {
+  private createSecurityGroup(vpc: Vpc) {
+    this.securityGroup = new ApiSecurityGroup(this, {
       vpc,
-      peer: this.apiGatewaySecurityGroup,
+      peer: this.gatewaySecurityGroup,
     });
   }
 
   private createLoadBalancer(vpc: Vpc, hostedZone: HostedZone, certificate: Certificate) {
     const loadBalancer = new ApiLoadBalancer(this, {
       vpc,
-      securityGroup: this.albSecurityGroup,
+      securityGroup: this.loadBalancerSecurityGroup,
       hostedZone,
       certificate,
     });

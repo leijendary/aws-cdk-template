@@ -9,10 +9,10 @@ type ApiAlbSecurityGroupProps = {
 
 const environment = env.environment;
 
-export class ApiAlbSecurityGroup extends PublicSecurityGroup {
+export class ApiLoadBalancerSecurityGroup extends PublicSecurityGroup {
   constructor(scope: Construct, props: ApiAlbSecurityGroupProps) {
     const { vpc } = props;
-    const id = `ApiAlbSecurityGroup-${environment}`;
+    const id = `ApiLoadBalancerSecurityGroup-${environment}`;
     const securityGroupName = `api-loadbalancer-${environment}`;
 
     super(scope, id, {

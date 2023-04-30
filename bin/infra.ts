@@ -3,7 +3,6 @@ import "source-map-support/register";
 import env from "../env";
 import { ApiStack } from "../lib/api-stack";
 import { DatabaseStack } from "../lib/database-stack";
-import { SecretStack } from "../lib/secret-stack";
 import { ConfigMap } from "../types/environment";
 import { InfraStack } from "./../lib/infra-stack";
 import { RepositoryStack } from "./../lib/repository-stack";
@@ -40,7 +39,7 @@ const props = {
 };
 const { appVpc: vpc, hostedZone, certificate } = new InfraStack(app, props);
 new RepositoryStack(app, props);
-const { apiSecurityGroup } = new ApiStack(app, {
+const { securityGroup: apiSecurityGroup } = new ApiStack(app, {
   vpc,
   hostedZone,
   certificate,
@@ -51,6 +50,5 @@ new DatabaseStack(app, {
   apiSecurityGroup,
   ...props,
 });
-new SecretStack(app, props);
 
 app.synth();

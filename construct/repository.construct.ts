@@ -3,13 +3,12 @@ import { Repository, RepositoryEncryption, RepositoryProps, TagStatus } from "aw
 import { Construct } from "constructs";
 
 export type RepositoryConstructProps = {
-  id: string;
   name: string;
 };
 
 export class RepositoryConstruct extends Repository {
-  constructor(scope: Construct, props: RepositoryConstructProps) {
-    const { id, name } = props;
+  constructor(scope: Construct, id: string, props: RepositoryConstructProps) {
+    const { name } = props;
     const config: RepositoryProps = {
       repositoryName: name,
       encryption: RepositoryEncryption.KMS,
@@ -30,6 +29,6 @@ export class RepositoryConstruct extends Repository {
       ],
     };
 
-    super(scope, `${id}Repository`, config);
+    super(scope, id, config);
   }
 }

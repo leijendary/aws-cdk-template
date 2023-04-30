@@ -14,15 +14,11 @@ export class ApiAuroraCluster extends AuroraConstruct {
   constructor(scope: Construct, props: ApiAuroraClusterProps) {
     const { vpc, securityGroup } = props;
     const name = "api";
-    const clusterIdentifier = `${name}-${environment}`;
-    const username = `api_${environment}`;
 
     super(scope, `ApiAuroraCluster-${environment}`, {
       vpc,
       name,
-      clusterIdentifier,
       securityGroup,
-      username,
     });
   }
 }
