@@ -8,21 +8,22 @@ import { InfraStack } from "./../lib/infra-stack";
 import { RepositoryStack } from "./../lib/repository-stack";
 
 const environment = env.environment;
+const domainName = env.domainName;
 const configMap: ConfigMap = {
   dev: {
-    domainName: "dev.leijendary.com",
+    domainName: `${environment}.${domainName}`,
     cidrBlock: "10.0.0.0/16",
   },
   test: {
-    domainName: "test.leijendary.com",
+    domainName: `${environment}.${domainName}`,
     cidrBlock: "10.1.0.0/16",
   },
   staging: {
-    domainName: "staging.leijendary.com",
+    domainName: `${environment}.${domainName}`,
     cidrBlock: "10.2.0.0/16",
   },
   prod: {
-    domainName: "leijendary.com",
+    domainName,
     cidrBlock: "10.3.0.0/16",
   },
 };

@@ -24,7 +24,7 @@ Name: `cdk-deployment-$ENV`.
 
 ## Deploying:
 
-`ENVIRONMENT=$ENV cdk --profile $YOUR_PROFILE_NAME deploy InfraStack-$ENV (or --all)`
+`ENVIRONMENT=$ENV ORGANIZATION=$ORG cdk --profile $YOUR_PROFILE_NAME deploy InfraStack-$ENV (or --all)`
 
 Where `$ENV` can be any of the following:
 
@@ -33,9 +33,11 @@ Where `$ENV` can be any of the following:
 3. `staging`
 4. `prod`
 
+And `$ORG` is your organization/company name in all lower case. This is also going to be your domain name followed by ".com".
+
 Example:
 
-`ENVIRONMENT=dev cdk --profile leijendary-dev deploy --all`
+`ENVIRONMENT=dev ORGANIZATION=leijendary cdk --profile leijendary-dev deploy --all`
 
 ## Secrets:
 
