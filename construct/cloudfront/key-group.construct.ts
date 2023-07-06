@@ -12,7 +12,7 @@ const organization = env.organization;
 export class KeyGroupConstruct extends KeyGroup {
   constructor(scope: Construct, props: KeyGroupConstructProps) {
     super(scope, `KeyGroup-${environment}`, {
-      keyGroupName: organization,
+      keyGroupName: `${organization}-${environment}`,
       items: [props.publicKey],
     });
   }
