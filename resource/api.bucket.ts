@@ -1,5 +1,5 @@
 import { RemovalPolicy } from "aws-cdk-lib";
-import { BlockPublicAccess, Bucket, BucketEncryption } from "aws-cdk-lib/aws-s3";
+import { BlockPublicAccess, Bucket } from "aws-cdk-lib/aws-s3";
 import { Construct } from "constructs";
 import env, { isProd } from "../env";
 
@@ -11,7 +11,6 @@ export class ApiBucket extends Bucket {
     super(scope, `ApiBucket-${environment}`, {
       bucketName: `${organization}-api-${environment}`,
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
-      encryption: BucketEncryption.KMS,
       removalPolicy: RemovalPolicy.RETAIN,
       versioned: isProd(),
     });
