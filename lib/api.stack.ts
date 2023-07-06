@@ -11,16 +11,15 @@ import { ApiLoadBalancer } from "../resource/api.load-balancer";
 import { ApiGatewaySecurityGroup } from "../resource/security-group/api-gateway.security-group";
 import { ApiLoadBalancerSecurityGroup } from "../resource/security-group/api-loadbalancer.security-group";
 import { ApiSecurityGroup } from "../resource/security-group/api.security-group";
-import { EnvironmentProps } from "../types/environment";
 
-type ApiStackProps = StackProps &
-  EnvironmentProps & {
-    vpc: Vpc;
-    hostedZone: HostedZone;
-    certificate: Certificate;
-  };
+type ApiStackProps = StackProps & {
+  vpc: Vpc;
+  hostedZone: HostedZone;
+  certificate: Certificate;
+};
 
 const environment = env.environment;
+const { domainName } = env.config;
 
 export class ApiStack extends Stack {
   loadBalancerSecurityGroup: SecurityGroup;
@@ -31,10 +30,9 @@ export class ApiStack extends Stack {
   cluster: Cluster;
 
   constructor(scope: Construct, props: ApiStackProps) {
-    const { domainName, vpc, hostedZone, certificate } = props;
-    const id = `ApiStack-${environment}`;
+    const { vpc, hostedZone, certificate } = props;
 
-    super(scope, id, props);
+    super(scope, `ApiStack-${environment}`, props);
 
     this.createLoadBalancerSecurityGroup(vpc);
     this.createGatewaySecurityGroup(vpc);

@@ -39,6 +39,25 @@ Example:
 
 `ENVIRONMENT=dev ORGANIZATION=leijendary cdk --profile leijendary-dev deploy --all`
 
+## CloudFront Public Keys
+
+Public keys are added to the CloudFront distribution automatically by the file path and environment variable:
+
+```javascript
+join(__dirname, `../../security/distribution-key.${environment}.pem`);
+```
+
+### Create Public Keys
+
+Refer to [Generate Public Keys](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/field-level-encryption.html).
+
+_**TL;DR:**_
+
+1. Generate Private Key: `openssl genrsa -out private_key.pem 2048`
+2. Generate Public Key: `openssl genrsa -out private_key.pem 2048`
+3. Copy the contents of `private_key.pem` to `security-$ENV` :: `cloudFront.privateKey`.
+4. Copy `public_key.pem` to the `security` folder with the format: `distribution-key.${environment}.pem`
+
 ## Secrets:
 
 Secrets should be created manually using a different way (like the AWS console) other than the CDK.
@@ -72,6 +91,8 @@ Name: `data-storage-$ENV`.
   "elasticsearch.password": "",
   "kafka.username": "",
   "kafka.password": "",
+  "rabbitmq.username": "",
+  "rabbitmq.password": "",
   "redis.username": "",
   "redis.password": "",
   // Non-AWS postgres database.
@@ -106,6 +127,8 @@ Name: `security-$ENV`.
   "refreshToken.privateKey": "",
   "refreshToken.publicKey": "",
   "encrypt.key": "",
-  "encrypt.salt": ""
+  "encrypt.salt": "",
+  "cloudFront.publicKeyId": "",
+  "cloudFront.privateKey": ""
 }
 ```

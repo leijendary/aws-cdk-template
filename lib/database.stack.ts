@@ -5,13 +5,11 @@ import { Construct } from "constructs";
 import env from "../env";
 import { ApiAuroraCluster } from "../resource/api.aurora";
 import { ApiAuroraSecurityGroup } from "../resource/security-group/api-aurora.security-group";
-import { EnvironmentProps } from "../types/environment";
 
-type DatabaseStackProps = StackProps &
-  EnvironmentProps & {
-    vpc: Vpc;
-    apiSecurityGroup: SecurityGroup;
-  };
+type DatabaseStackProps = StackProps & {
+  vpc: Vpc;
+  securityGroup: SecurityGroup;
+};
 
 const environment = env.environment;
 
@@ -20,12 +18,11 @@ export class DatabaseStack extends Stack {
   apiAuroraCluster: DatabaseCluster;
 
   constructor(scope: Construct, props: DatabaseStackProps) {
-    const { vpc, apiSecurityGroup } = props;
-    const id = `DatabaseStack-${environment}`;
+    const { vpc, securityGroup } = props;
 
-    super(scope, id, props);
+    super(scope, `DatabaseStack-${environment}`, props);
 
-    this.createApiAuroraSecurityGroup(vpc, apiSecurityGroup);
+    this.createApiAuroraSecurityGroup(vpc, securityGroup);
     this.createApiAuroraCluster(vpc);
   }
 

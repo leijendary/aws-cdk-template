@@ -4,47 +4,39 @@ import { Vpc } from "aws-cdk-lib/aws-ec2";
 import { HostedZone } from "aws-cdk-lib/aws-route53";
 import { Construct } from "constructs";
 import env from "../env";
-import { AppVpc } from "./../resource/app.vpc";
-import { EnvironmentProps } from "./../types/environment";
+import { AppVpc } from "../resource/app.vpc";
 
-type InfraStackProps = StackProps & EnvironmentProps;
+type InfraStackProps = StackProps;
 
 const environment = env.environment;
+const { domainName } = env.config;
 
 export class InfraStack extends Stack {
-  domainName: string;
-  appVpc: Vpc;
+  vpc: Vpc;
   hostedZone: HostedZone;
   certificate: Certificate;
 
   constructor(scope: Construct, props: InfraStackProps) {
-    const { cidrBlock, domainName } = props;
-    const id = `InfraStack-${environment}`;
+    super(scope, `InfraStack-${environment}`, props);
 
-    super(scope, id, props);
-
-    this.domainName = domainName;
-
-    this.createVpc(cidrBlock);
+    this.createVpc();
     this.createHostedZone();
     this.createCertificate();
   }
 
-  private createVpc(cidrBlock: string) {
-    this.appVpc = new AppVpc(this, {
-      cidrBlock,
-    });
+  private createVpc() {
+    this.vpc = new AppVpc(this);
   }
 
   private createHostedZone() {
     this.hostedZone = new HostedZone(this, `HostedZone-${environment}`, {
-      zoneName: this.domainName,
+      zoneName: domainName,
     });
   }
 
   private createCertificate() {
     this.certificate = new Certificate(this, `DomainCertificate-${environment}`, {
-      domainName: `*.${this.domainName}`,
+      domainName: `*.${domainName}`,
       validation: CertificateValidation.fromDns(this.hostedZone),
     });
   }

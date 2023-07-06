@@ -1,54 +1,51 @@
-import { App } from "aws-cdk-lib";
+import { App, StackProps } from "aws-cdk-lib";
 import "source-map-support/register";
 import env from "../env";
-import { ApiStack } from "../lib/api-stack";
-import { DatabaseStack } from "../lib/database-stack";
-import { ConfigMap } from "../types/environment";
-import { InfraStack } from "./../lib/infra-stack";
-import { RepositoryStack } from "./../lib/repository-stack";
+import { ApiStack } from "../lib/api.stack";
+import { CertificateStack } from "../lib/certificate.stack";
+import { CloudFrontStack } from "../lib/cloudfront.stack";
+import { DatabaseStack } from "../lib/database.stack";
+import { InfraStack } from "../lib/infra.stack";
+import { RepositoryStack } from "../lib/repository.stack";
+import { BucketStack } from "./../lib/bucket.stack";
 
-const environment = env.environment;
-const domainName = env.domainName;
-const configMap: ConfigMap = {
-  dev: {
-    domainName: `${environment}.${domainName}`,
-    cidrBlock: "10.0.0.0/16",
-  },
-  test: {
-    domainName: `${environment}.${domainName}`,
-    cidrBlock: "10.1.0.0/16",
-  },
-  staging: {
-    domainName: `${environment}.${domainName}`,
-    cidrBlock: "10.2.0.0/16",
-  },
-  prod: {
-    domainName,
-    cidrBlock: "10.3.0.0/16",
-  },
-};
-const app = new App();
-const config = configMap[environment];
 const account = env.account;
 const region = env.region;
-const props = {
+const app = new App();
+const props: StackProps = {
   env: {
     account,
     region,
   },
-  ...config,
+  crossRegionReferences: true,
 };
-const { appVpc: vpc, hostedZone, certificate } = new InfraStack(app, props);
+const { vpc, hostedZone, certificate: domainCertificate } = new InfraStack(app, props);
+const { bucket } = new BucketStack(app, props);
+const { certificate: regionalCertificate } = new CertificateStack(app, {
+  hostedZone,
+  ...props,
+  env: {
+    ...props.env,
+    // This has to be deployed here to be used by CloudFront.
+    region: "us-east-1",
+  },
+});
 new RepositoryStack(app, props);
-const { securityGroup: apiSecurityGroup } = new ApiStack(app, {
+const { securityGroup } = new ApiStack(app, {
   vpc,
   hostedZone,
-  certificate,
+  certificate: domainCertificate,
+  ...props,
+});
+new CloudFrontStack(app, {
+  bucket,
+  certificate: regionalCertificate,
+  hostedZone,
   ...props,
 });
 new DatabaseStack(app, {
   vpc,
-  apiSecurityGroup,
+  securityGroup,
   ...props,
 });
 

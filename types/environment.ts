@@ -1,4 +1,4 @@
-export type ConfigMap = {
+export type EnvironmentConfig = {
   [key: string]: EnvironmentProps;
 };
 

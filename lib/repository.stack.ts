@@ -29,9 +29,7 @@ const repositories: Repository[] = [
 
 export class RepositoryStack extends Stack {
   constructor(scope: Construct, props: StackProps) {
-    const id = `RepositoryStack-${environment}`;
-
-    super(scope, id, props);
+    super(scope, `RepositoryStack-${environment}`, props);
 
     this.create();
   }
