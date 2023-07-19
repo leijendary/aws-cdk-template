@@ -110,7 +110,10 @@ Name: `integration-$ENV`.
 ```json
 {
   "apple.clientId": "",
-  "google.clientId": ""
+  "google.clientId": "",
+  "sendgrid.apiKey": "",
+  "twilio.accountSid": "",
+  "twilio.authToken": ""
 }
 ```
 
