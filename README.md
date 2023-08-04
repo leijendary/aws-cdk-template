@@ -112,6 +112,9 @@ Name: `integration-$ENV`.
   "apple.clientId": "",
   "google.clientId": "",
   "sendgrid.apiKey": "",
+  "stripe.publishableKey": "",
+  "stripe.secretKey": "",
+  "stripe.webhook.paymentIntentSecret": "",
   "twilio.accountSid": "",
   "twilio.authToken": ""
 }
