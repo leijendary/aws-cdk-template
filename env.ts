@@ -2,6 +2,15 @@ import { EnvironmentConfig } from "./types/environment";
 
 const environment = process.env.ENVIRONMENT!!;
 const organization = process.env.ORGANIZATION!!;
+
+if (!environment) {
+  throw new Error("Environment not set. Make sure the environment variable 'ENVIRONMENT' is set.");
+}
+
+if (!organization) {
+  throw new Error("Organization not set. Make sure the environment variable 'ORGANIZATION' is set.");
+}
+
 const domainName = `${organization}.com`;
 const environmentConfig: EnvironmentConfig = {
   dev: {
