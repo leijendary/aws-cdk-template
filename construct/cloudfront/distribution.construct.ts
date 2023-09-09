@@ -1,5 +1,11 @@
 import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
-import { Distribution, PriceClass, ViewerProtocolPolicy } from "aws-cdk-lib/aws-cloudfront";
+import {
+  Distribution,
+  OriginRequestPolicy,
+  PriceClass,
+  ResponseHeadersPolicy,
+  ViewerProtocolPolicy,
+} from "aws-cdk-lib/aws-cloudfront";
 import { S3Origin } from "aws-cdk-lib/aws-cloudfront-origins";
 import { HostedZone } from "aws-cdk-lib/aws-route53";
 import { Bucket } from "aws-cdk-lib/aws-s3";
@@ -34,6 +40,8 @@ export class DistributionConstruct extends Distribution {
         origin: new S3Origin(bucket, {
           originAccessIdentity,
         }),
+        originRequestPolicy: OriginRequestPolicy.CORS_CUSTOM_ORIGIN,
+        responseHeadersPolicy: ResponseHeadersPolicy.CORS_ALLOW_ALL_ORIGINS_WITH_PREFLIGHT_AND_SECURITY_HEADERS,
         trustedKeyGroups: [keyGroup],
         viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       },
