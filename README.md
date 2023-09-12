@@ -3,11 +3,13 @@
 - This template is intended for the microservice architecture
 - **Intended for personal use only**
 
-## IAM User:
+## IAM Role:
 
-When creating an IAM user that has access to the CDK for deploying (like GitHub actions), create the following policy:
+When creating an IAM role that has access to the CDK for deploying (like GitHub actions), create the following role:
 
-Name: `cdk-deployment-$ENV`.
+Name: `Deployment-$ENV`.
+
+### Policy:
 
 ```json
 {
@@ -17,6 +19,33 @@ Name: `cdk-deployment-$ENV`.
       "Effect": "Allow",
       "Action": ["sts:AssumeRole"],
       "Resource": ["arn:aws:iam::*:role/cdk-*"]
+    }
+  ]
+}
+```
+
+### Trust:
+
+You have to [configure a role for GitHub OIDC identity provider](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-idp_oidc.html#idp_oidc_Create_GitHub).
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Federated": "arn:aws:iam::<Account ID>:oidc-provider/token.actions.githubusercontent.com"
+      },
+      "Action": "sts:AssumeRoleWithWebIdentity",
+      "Condition": {
+        "StringEquals": {
+          "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
+        },
+        "StringLike": {
+          "token.actions.githubusercontent.com:sub": "repo:<GitHub organization>/*"
+        }
+      }
     }
   ]
 }
