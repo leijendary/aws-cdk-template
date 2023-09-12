@@ -7,7 +7,7 @@
 
 When creating an IAM role that has access to the CDK for deploying (like GitHub actions), create the following role:
 
-Name: `Deployment-$ENV`.
+Name: `DeploymentRole-$ENV`.
 
 ### Policy:
 
