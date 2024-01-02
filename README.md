@@ -53,7 +53,7 @@ You have to [configure a role for GitHub OIDC identity provider](https://docs.aw
 
 ## Deploying:
 
-`ENVIRONMENT=$ENV ORGANIZATION=$ORG cdk --profile $YOUR_PROFILE_NAME deploy InfraStack-$ENV (or --all)`
+`ENVIRONMENT=$ENV ORGANIZATION=$ORG cdk --profile $YOUR_PROFILE_NAME deploy NetworkStack-$ENV (or --all)`
 
 Where `$ENV` can be any of the following:
 

@@ -6,18 +6,18 @@ import { Construct } from "constructs";
 import env from "../env";
 import { AppVpc } from "../resource/app.vpc";
 
-type InfraStackProps = StackProps;
+type NetworkStackProps = StackProps;
 
 const environment = env.environment;
 const { domainName } = env.config;
 
-export class InfraStack extends Stack {
+export class NetworkStack extends Stack {
   vpc: Vpc;
   hostedZone: HostedZone;
   certificate: Certificate;
 
-  constructor(scope: Construct, props: InfraStackProps) {
-    super(scope, `InfraStack-${environment}`, props);
+  constructor(scope: Construct, props: NetworkStackProps) {
+    super(scope, `NetworkStack-${environment}`, props);
 
     this.createVpc();
     this.createHostedZone();

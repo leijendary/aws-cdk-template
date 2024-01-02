@@ -3,7 +3,6 @@ import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
 import { SecurityGroup, Vpc } from "aws-cdk-lib/aws-ec2";
 import { Cluster } from "aws-cdk-lib/aws-ecs";
 import { ApplicationListener, ApplicationLoadBalancer } from "aws-cdk-lib/aws-elasticloadbalancingv2";
-import { HostedZone } from "aws-cdk-lib/aws-route53";
 import { Construct } from "constructs";
 import env from "../env";
 import { ApiFargateCluster } from "../resource/api.ecs";
@@ -14,7 +13,6 @@ import { ApiSecurityGroup } from "../resource/security-group/api.security-group"
 
 type ApiStackProps = StackProps & {
   vpc: Vpc;
-  hostedZone: HostedZone;
   certificate: Certificate;
 };
 
@@ -30,14 +28,14 @@ export class ApiStack extends Stack {
   cluster: Cluster;
 
   constructor(scope: Construct, props: ApiStackProps) {
-    const { vpc, hostedZone, certificate } = props;
+    const { vpc, certificate } = props;
 
     super(scope, `ApiStack-${environment}`, props);
 
     this.createLoadBalancerSecurityGroup(vpc);
     this.createGatewaySecurityGroup(vpc);
     this.createSecurityGroup(vpc);
-    this.createLoadBalancer(vpc, hostedZone, certificate);
+    this.createLoadBalancer(vpc, certificate);
     this.createFargateCluster(domainName, vpc);
   }
 
@@ -61,11 +59,10 @@ export class ApiStack extends Stack {
     });
   }
 
-  private createLoadBalancer(vpc: Vpc, hostedZone: HostedZone, certificate: Certificate) {
+  private createLoadBalancer(vpc: Vpc, certificate: Certificate) {
     const loadBalancer = new ApiLoadBalancer(this, {
       vpc,
       securityGroup: this.loadBalancerSecurityGroup,
-      hostedZone,
       certificate,
     });
 

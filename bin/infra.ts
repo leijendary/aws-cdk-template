@@ -5,7 +5,7 @@ import { ApiStack } from "../lib/api.stack";
 import { CertificateStack } from "../lib/certificate.stack";
 import { CloudFrontStack } from "../lib/cloudfront.stack";
 import { DatabaseStack } from "../lib/database.stack";
-import { InfraStack } from "../lib/infra.stack";
+import { NetworkStack } from "../lib/network.stack";
 import { RepositoryStack } from "../lib/repository.stack";
 import { BucketStack } from "./../lib/bucket.stack";
 
@@ -19,8 +19,14 @@ const props: StackProps = {
   },
   crossRegionReferences: true,
 };
-const { vpc, hostedZone, certificate: domainCertificate } = new InfraStack(app, props);
+
+// Network
+const { vpc, hostedZone, certificate: domainCertificate } = new NetworkStack(app, props);
+
+// Bucket
 const { bucket } = new BucketStack(app, props);
+
+// Certificate
 const { certificate: regionalCertificate } = new CertificateStack(app, {
   hostedZone,
   ...props,
@@ -30,19 +36,27 @@ const { certificate: regionalCertificate } = new CertificateStack(app, {
     region: "us-east-1",
   },
 });
+
+// Docker repository
 new RepositoryStack(app, props);
-const { securityGroup } = new ApiStack(app, {
+
+// API
+const { loadBalancer, securityGroup } = new ApiStack(app, {
   vpc,
-  hostedZone,
   certificate: domainCertificate,
   ...props,
 });
+
+// CloudFront
 new CloudFrontStack(app, {
   bucket,
   certificate: regionalCertificate,
   hostedZone,
+  loadBalancer,
   ...props,
 });
+
+// Database
 new DatabaseStack(app, {
   vpc,
   securityGroup,
