@@ -1,12 +1,13 @@
-import { Aspects, Duration, RemovalPolicy } from "aws-cdk-lib";
-import { InstanceType, SecurityGroup, SubnetType, Vpc } from "aws-cdk-lib/aws-ec2";
+import { Duration, RemovalPolicy } from "aws-cdk-lib";
+import { SecurityGroup, SubnetType, Vpc } from "aws-cdk-lib/aws-ec2";
 import {
   AuroraPostgresEngineVersion,
-  CfnDBCluster,
+  ClusterInstance,
   Credentials,
   DatabaseCluster,
   DatabaseClusterEngine,
   DatabaseClusterProps,
+  IClusterInstance,
 } from "aws-cdk-lib/aws-rds";
 import { Secret } from "aws-cdk-lib/aws-secretsmanager";
 import { Construct } from "constructs";
@@ -23,46 +24,37 @@ const environment = env.environment;
 export class AuroraConstruct extends DatabaseCluster {
   constructor(scope: Construct, id: string, props: AuroraConstructProps) {
     const { vpc, name, securityGroup } = props;
+    let readers: IClusterInstance[] = [];
+
+    if (isProd) {
+      const reader = ClusterInstance.serverlessV2("reader", { scaleWithWriter: true });
+      readers.push(reader);
+    }
+
     const credentials = createCredentials(scope, name);
     const config: DatabaseClusterProps = {
-      engine: DatabaseClusterEngine.auroraPostgres({
-        version: AuroraPostgresEngineVersion.VER_15_2,
-      }),
-      instances: isProd ? 2 : 1,
-      instanceProps: {
-        vpc,
-        vpcSubnets: {
-          subnetType: SubnetType.PRIVATE_ISOLATED,
-        },
-        instanceType: new InstanceType("serverless"),
-        securityGroups: [securityGroup],
-      },
       clusterIdentifier: `${name}-${environment}`,
+      engine: DatabaseClusterEngine.auroraPostgres({
+        version: AuroraPostgresEngineVersion.VER_15_5,
+      }),
+      serverlessV2MinCapacity: isProd ? 1 : 0.5,
+      serverlessV2MaxCapacity: isProd ? 16 : 1,
+      writer: ClusterInstance.serverlessV2("writer"),
+      readers,
       credentials,
       backup: {
-        retention: Duration.days(7),
+        retention: Duration.days(isProd ? 30 : 7),
       },
       storageEncrypted: true,
       removalPolicy: isProd ? RemovalPolicy.RETAIN : RemovalPolicy.DESTROY,
+      vpc,
+      vpcSubnets: {
+        subnetType: SubnetType.PRIVATE_ISOLATED,
+      },
+      securityGroups: [securityGroup],
     };
 
     super(scope, id, config);
-
-    this.setScaling();
-  }
-
-  private setScaling() {
-    // Add capacity to the db cluster to enable scaling
-    Aspects.of(this).add({
-      visit(node) {
-        if (node instanceof CfnDBCluster) {
-          node.serverlessV2ScalingConfiguration = {
-            minCapacity: isProd ? 1 : 0.5,
-            maxCapacity: isProd ? 16 : 1,
-          };
-        }
-      },
-    });
   }
 }
 

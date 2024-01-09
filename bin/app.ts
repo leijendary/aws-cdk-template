@@ -9,6 +9,7 @@ import { CertificateStack } from "../lib/certificate.stack";
 import { CloudFrontStack } from "../lib/cloudfront.stack";
 import { DatabaseStack } from "../lib/database.stack";
 import { NetworkStack } from "../lib/network.stack";
+import { OrganizationStack } from "../lib/organization.stack";
 import { RepositoryStack } from "../lib/repository.stack";
 
 const { account, region } = env;
@@ -23,6 +24,9 @@ const props: StackProps = {
 
 // Billing and Cost
 new BillingStack(app);
+
+// Organizations
+new OrganizationStack(app);
 
 // Network
 const { vpc, hostedZone, certificate: domainCertificate } = new NetworkStack(app, props);
