@@ -4,6 +4,7 @@ import {
   AuroraPostgresEngineVersion,
   ClusterInstance,
   Credentials,
+  DBClusterStorageType,
   DatabaseCluster,
   DatabaseClusterEngine,
   DatabaseClusterProps,
@@ -41,6 +42,7 @@ export class AuroraConstruct extends DatabaseCluster {
       serverlessV2MaxCapacity: isProd ? 16 : 1,
       writer: ClusterInstance.serverlessV2("writer"),
       readers,
+      storageType: isProd ? DBClusterStorageType.AURORA_IOPT1 : DBClusterStorageType.AURORA,
       credentials,
       backup: {
         retention: Duration.days(isProd ? 30 : 7),
