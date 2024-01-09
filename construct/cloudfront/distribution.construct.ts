@@ -2,6 +2,8 @@ import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
 import {
   AllowedMethods,
   Distribution,
+  DistributionProps,
+  OriginAccessIdentity,
   OriginRequestPolicy,
   PriceClass,
   ResponseHeadersPolicy,
@@ -14,7 +16,6 @@ import { Bucket } from "aws-cdk-lib/aws-s3";
 import { Construct } from "constructs";
 import env from "../../env";
 import { KeyGroupConstruct } from "./key-group.construct";
-import { OriginAccessIdentityConstruct } from "./origin-access-identity.construct";
 import { PublicKeyConstruct } from "./public-key.construct";
 
 type S3DistributionConstructProps = {
@@ -34,13 +35,12 @@ const environment = env.environment;
 export class S3DistributionConstruct extends Distribution {
   constructor(scope: Construct, props: S3DistributionConstructProps) {
     const { bucket, certificate, hostedZone } = props;
+    const originAccessIdentity = new OriginAccessIdentity(scope, `OriginAccessIdentity-${environment}`);
     const publicKey = new PublicKeyConstruct(scope);
     const keyGroup = new KeyGroupConstruct(scope, {
       publicKey,
     });
-    const originAccessIdentity = new OriginAccessIdentityConstruct(scope);
-
-    super(scope, `S3Distribution-${environment}`, {
+    const config: DistributionProps = {
       certificate,
       domainNames: [`cdn.${hostedZone.zoneName}`],
       priceClass: PriceClass.PRICE_CLASS_100,
@@ -53,19 +53,16 @@ export class S3DistributionConstruct extends Distribution {
         trustedKeyGroups: [keyGroup],
         viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       },
-    });
+    };
+
+    super(scope, `S3Distribution-${environment}`, config);
   }
 }
 
 export class AlbDistributionConstruct extends Distribution {
   constructor(scope: Construct, props: AlbDistributionConstructProps) {
     const { certificate, hostedZone, loadBalancer } = props;
-    const publicKey = new PublicKeyConstruct(scope);
-    const keyGroup = new KeyGroupConstruct(scope, {
-      publicKey,
-    });
-
-    super(scope, `AlbDistribution-${environment}`, {
+    const config: DistributionProps = {
       certificate,
       domainNames: [`api.${hostedZone.zoneName}`],
       priceClass: PriceClass.PRICE_CLASS_100,
@@ -74,9 +71,10 @@ export class AlbDistributionConstruct extends Distribution {
         origin: new LoadBalancerV2Origin(loadBalancer),
         originRequestPolicy: OriginRequestPolicy.CORS_CUSTOM_ORIGIN,
         responseHeadersPolicy: ResponseHeadersPolicy.CORS_ALLOW_ALL_ORIGINS_WITH_PREFLIGHT_AND_SECURITY_HEADERS,
-        trustedKeyGroups: [keyGroup],
         viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       },
-    });
+    };
+
+    super(scope, `AlbDistribution-${environment}`, config);
   }
 }

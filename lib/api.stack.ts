@@ -16,8 +16,8 @@ type ApiStackProps = StackProps & {
   certificate: Certificate;
 };
 
-const environment = env.environment;
-const { domainName } = env.config;
+const { environment, config } = env;
+const { domainName } = config;
 
 export class ApiStack extends Stack {
   loadBalancerSecurityGroup: SecurityGroup;
@@ -28,9 +28,9 @@ export class ApiStack extends Stack {
   cluster: Cluster;
 
   constructor(scope: Construct, props: ApiStackProps) {
-    const { vpc, certificate } = props;
-
     super(scope, `ApiStack-${environment}`, props);
+
+    const { vpc, certificate } = props;
 
     this.createLoadBalancerSecurityGroup(vpc);
     this.createGatewaySecurityGroup(vpc);

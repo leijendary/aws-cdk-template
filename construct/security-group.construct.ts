@@ -1,21 +1,21 @@
 import { Peer, Port, SecurityGroup, SecurityGroupProps, Vpc } from "aws-cdk-lib/aws-ec2";
 import { Construct } from "constructs";
 
-type PublicSecurityGroupProps = SecurityGroupProps & {
+export type PublicSecurityGroupProps = SecurityGroupProps & {
   vpc: Vpc;
 };
 
-type GatewaySecurityGroupProps = SecurityGroupProps & {
-  vpc: Vpc;
-  peer: SecurityGroup;
-};
-
-type PeerSecurityGroupProps = SecurityGroupProps & {
+export type GatewaySecurityGroupProps = SecurityGroupProps & {
   vpc: Vpc;
   peer: SecurityGroup;
 };
 
-type AuroraSecurityGroupProps = SecurityGroupProps & {
+export type PeerSecurityGroupProps = SecurityGroupProps & {
+  vpc: Vpc;
+  peer: SecurityGroup;
+};
+
+export type AuroraSecurityGroupProps = SecurityGroupProps & {
   vpc: Vpc;
   peer: SecurityGroup;
 };

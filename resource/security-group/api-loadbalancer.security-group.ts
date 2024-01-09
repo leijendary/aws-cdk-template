@@ -1,6 +1,6 @@
 import { Vpc } from "aws-cdk-lib/aws-ec2";
 import { Construct } from "constructs";
-import { PublicSecurityGroup } from "../../construct/security-group.construct";
+import { PublicSecurityGroup, PublicSecurityGroupProps } from "../../construct/security-group.construct";
 import env from "../../env";
 
 type ApiAlbSecurityGroupProps = {
@@ -14,10 +14,11 @@ export class ApiLoadBalancerSecurityGroup extends PublicSecurityGroup {
     const { vpc } = props;
     const id = `ApiLoadBalancerSecurityGroup-${environment}`;
     const securityGroupName = `api-loadbalancer-${environment}`;
-
-    super(scope, id, {
+    const config: PublicSecurityGroupProps = {
       vpc,
       securityGroupName,
-    });
+    };
+
+    super(scope, id, config);
   }
 }

@@ -8,8 +8,8 @@ import { AppVpc } from "../resource/app.vpc";
 
 type NetworkStackProps = StackProps;
 
-const environment = env.environment;
-const { domainName } = env.config;
+const { environment, config } = env;
+const { domainName } = config;
 
 export class NetworkStack extends Stack {
   vpc: Vpc;

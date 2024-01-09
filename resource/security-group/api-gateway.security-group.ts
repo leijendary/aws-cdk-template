@@ -1,6 +1,6 @@
 import { SecurityGroup, Vpc } from "aws-cdk-lib/aws-ec2";
 import { Construct } from "constructs";
-import { GatewaySecurityGroup } from "../../construct/security-group.construct";
+import { GatewaySecurityGroup, GatewaySecurityGroupProps } from "../../construct/security-group.construct";
 import env from "../../env";
 
 type ApiGatewaySecurityGroupProps = {
@@ -15,11 +15,12 @@ export class ApiGatewaySecurityGroup extends GatewaySecurityGroup {
     const { vpc, peer } = props;
     const id = `ApiGatewaySecurityGroup-${environment}`;
     const securityGroupName = `api-gateway-${environment}`;
-
-    super(scope, id, {
+    const config: GatewaySecurityGroupProps = {
       vpc,
       securityGroupName,
       peer,
-    });
+    };
+
+    super(scope, id, config);
   }
 }

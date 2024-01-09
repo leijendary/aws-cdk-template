@@ -3,6 +3,14 @@
 - This template is intended for the microservice architecture
 - **Intended for personal use only**
 
+## .env:
+
+Copy `.env.example` to `.env` and fill up the following details:
+
+1. `ENVIRONMENT`: The environment where to deploy the stacks.
+2. `ORGANIZATION`: This is mostly used as the domain name.
+3. `SUBSCRIBER`: The email for billing alerts.
+
 ## IAM Role:
 
 When creating an IAM role that has access to the CDK for deploying (like GitHub actions), create the following role:
@@ -53,7 +61,7 @@ You have to [configure a role for GitHub OIDC identity provider](https://docs.aw
 
 ## Deploying:
 
-`ENVIRONMENT=$ENV ORGANIZATION=$ORG cdk --profile $YOUR_PROFILE_NAME deploy NetworkStack-$ENV (or --all)`
+`cdk --profile $YOUR_PROFILE_NAME deploy NetworkStack-$ENV (or --all)`
 
 Where `$ENV` can be any of the following:
 
@@ -66,7 +74,7 @@ And `$ORG` is your organization/company name in all lower case. This is also goi
 
 Example:
 
-`ENVIRONMENT=dev ORGANIZATION=leijendary cdk --profile leijendary-dev deploy --all`
+`cdk --profile leijendary-dev deploy --all`
 
 ## CloudFront Public Keys
 

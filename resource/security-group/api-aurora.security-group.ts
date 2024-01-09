@@ -1,6 +1,6 @@
 import { SecurityGroup, Vpc } from "aws-cdk-lib/aws-ec2";
 import { Construct } from "constructs";
-import { AuroraSecurityGroup } from "../../construct/security-group.construct";
+import { AuroraSecurityGroup, AuroraSecurityGroupProps } from "../../construct/security-group.construct";
 import env from "../../env";
 
 type ApiAuroraSecurityGroupProps = {
@@ -15,11 +15,12 @@ export class ApiAuroraSecurityGroup extends AuroraSecurityGroup {
     const { vpc, peer } = props;
     const id = `ApiAuroraSecurityGroup-${environment}`;
     const securityGroupName = `api-aurora-${environment}`;
-
-    super(scope, id, {
+    const config: AuroraSecurityGroupProps = {
       vpc,
       securityGroupName,
       peer,
-    });
+    };
+
+    super(scope, id, config);
   }
 }

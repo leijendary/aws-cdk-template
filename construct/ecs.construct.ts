@@ -2,7 +2,7 @@ import { Cluster, ClusterProps } from "aws-cdk-lib/aws-ecs";
 import { NamespaceType } from "aws-cdk-lib/aws-servicediscovery";
 import { Construct } from "constructs";
 
-type FargateClusterConstructProps = ClusterProps & {
+export type FargateClusterConstructProps = ClusterProps & {
   domainName: string;
 };
 

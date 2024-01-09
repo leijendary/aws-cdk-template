@@ -18,9 +18,9 @@ export class DatabaseStack extends Stack {
   apiAuroraCluster: DatabaseCluster;
 
   constructor(scope: Construct, props: DatabaseStackProps) {
-    const { vpc, securityGroup } = props;
-
     super(scope, `DatabaseStack-${environment}`, props);
+
+    const { vpc, securityGroup } = props;
 
     this.createApiAuroraSecurityGroup(vpc, securityGroup);
     this.createApiAuroraCluster(vpc);

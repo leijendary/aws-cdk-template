@@ -12,7 +12,7 @@ import { Secret } from "aws-cdk-lib/aws-secretsmanager";
 import { Construct } from "constructs";
 import env, { isProd } from "../env";
 
-type AuroraConstructProps = {
+export type AuroraConstructProps = {
   vpc: Vpc;
   name: string;
   securityGroup: SecurityGroup;
@@ -28,7 +28,7 @@ export class AuroraConstruct extends DatabaseCluster {
       engine: DatabaseClusterEngine.auroraPostgres({
         version: AuroraPostgresEngineVersion.VER_15_2,
       }),
-      instances: isProd() ? 2 : 1,
+      instances: isProd ? 2 : 1,
       instanceProps: {
         vpc,
         vpcSubnets: {
@@ -43,7 +43,7 @@ export class AuroraConstruct extends DatabaseCluster {
         retention: Duration.days(7),
       },
       storageEncrypted: true,
-      removalPolicy: isProd() ? RemovalPolicy.RETAIN : RemovalPolicy.DESTROY,
+      removalPolicy: isProd ? RemovalPolicy.RETAIN : RemovalPolicy.DESTROY,
     };
 
     super(scope, id, config);
@@ -57,8 +57,8 @@ export class AuroraConstruct extends DatabaseCluster {
       visit(node) {
         if (node instanceof CfnDBCluster) {
           node.serverlessV2ScalingConfiguration = {
-            minCapacity: isProd() ? 1 : 0.5,
-            maxCapacity: isProd() ? 16 : 1,
+            minCapacity: isProd ? 1 : 0.5,
+            maxCapacity: isProd ? 16 : 1,
           };
         }
       },

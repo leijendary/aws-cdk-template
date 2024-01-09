@@ -1,5 +1,5 @@
 import { CfnOutput } from "aws-cdk-lib";
-import { PublicKey } from "aws-cdk-lib/aws-cloudfront";
+import { PublicKey, PublicKeyProps } from "aws-cdk-lib/aws-cloudfront";
 import { Construct } from "constructs";
 import { readFileSync } from "fs";
 import { join } from "path";
@@ -13,16 +13,17 @@ export class PublicKeyConstruct extends PublicKey {
     const encodedKey = readFileSync(keyPath, {
       encoding: "utf-8",
     });
-
-    super(scope, `PublicKey-${environment}`, {
+    const config: PublicKeyProps = {
       encodedKey,
-    });
+    };
+
+    super(scope, `PublicKey-${environment}`, config);
 
     this.output();
   }
 
   private output() {
-    new CfnOutput(this, `PublicKeyId-${environment}`, {
+    new CfnOutput(this, `PublicKeyID-${environment}`, {
       value: this.publicKeyId,
     });
   }

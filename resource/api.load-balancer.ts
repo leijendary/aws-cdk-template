@@ -3,6 +3,7 @@ import { SecurityGroup, Vpc } from "aws-cdk-lib/aws-ec2";
 import {
   ApplicationListener,
   ApplicationLoadBalancer,
+  ApplicationLoadBalancerProps,
   ApplicationProtocol,
   ListenerAction,
 } from "aws-cdk-lib/aws-elasticloadbalancingv2";
@@ -22,14 +23,15 @@ export class ApiLoadBalancer extends ApplicationLoadBalancer {
 
   constructor(scope: Construct, props: ApiLoadBalancerProps) {
     const { vpc, securityGroup, certificate } = props;
-    const suffix = !isProd() ? `-${environment}` : "";
+    const suffix = !isProd ? `-${environment}` : "";
     const loadBalancerName = `api-loadbalancer${suffix}`;
-
-    super(scope, `ApiLoadBalancer-${environment}`, {
+    const config: ApplicationLoadBalancerProps = {
       loadBalancerName,
       vpc,
       securityGroup,
-    });
+    };
+
+    super(scope, `ApiLoadBalancer-${environment}`, config);
 
     this.addRedirect();
     this.addSecuredListener(certificate);

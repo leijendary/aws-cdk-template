@@ -8,16 +8,16 @@ type CertificateStackProps = StackProps & {
   hostedZone: HostedZone;
 };
 
-const environment = env.environment;
-const { domainName } = env.config;
+const { environment, config } = env;
+const { domainName } = config;
 
 export class CertificateStack extends Stack {
   certificate: Certificate;
 
   constructor(scope: Construct, props: CertificateStackProps) {
-    const { hostedZone } = props;
-
     super(scope, `CertificateStack-${environment}`, props);
+
+    const { hostedZone } = props;
 
     this.createCertificate(hostedZone);
   }

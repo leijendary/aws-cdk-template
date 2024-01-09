@@ -1,7 +1,7 @@
 import { IpAddresses, SubnetType, Vpc, VpcProps } from "aws-cdk-lib/aws-ec2";
 import { Construct } from "constructs";
 
-type PublicVpcConstructProps = VpcProps & {
+export type PublicVpcConstructProps = VpcProps & {
   cidrBlock: string;
 };
 
