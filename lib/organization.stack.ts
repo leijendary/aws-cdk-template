@@ -3,6 +3,9 @@ import { CfnOrganization, CfnOrganizationalUnit } from "aws-cdk-lib/aws-organiza
 import { Construct } from "constructs";
 import { ProdOrganizationalUnit } from "../construct/organizational-unit.construct";
 
+/**
+ * Reference: https://docs.aws.amazon.com/whitepapers/latest/organizing-your-aws-environment/recommended-ous-and-accounts.html
+ */
 export class OrganizationStack extends Stack {
   organization: CfnOrganization;
 
