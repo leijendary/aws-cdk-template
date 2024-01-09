@@ -22,12 +22,12 @@ export class PublicVpcConstruct extends Vpc {
         },
         {
           name: "Private",
-          cidrMask: 22,
+          cidrMask: 18,
           subnetType: SubnetType.PRIVATE_WITH_EGRESS,
         },
         {
           name: "PrivateIsolated",
-          cidrMask: 18,
+          cidrMask: 22,
           subnetType: SubnetType.PRIVATE_ISOLATED,
         },
       ],
