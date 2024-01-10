@@ -17,7 +17,7 @@ export class NetworkStack extends Stack {
   certificate: Certificate;
 
   constructor(scope: Construct, props: NetworkStackProps) {
-    super(scope, `NetworkStack-${environment}`, props);
+    super(scope, `Network-${environment}`, props);
 
     this.createVpc();
     this.createHostedZone();

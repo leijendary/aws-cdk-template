@@ -12,7 +12,7 @@ export class BucketStack extends Stack {
   bucket: Bucket;
 
   constructor(scope: Construct, props: BucketStackProps) {
-    super(scope, `BucketStack-${environment}`, props);
+    super(scope, `Bucket-${environment}`, props);
 
     this.createBucket();
   }

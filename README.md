@@ -61,7 +61,7 @@ You have to [configure a role for GitHub OIDC identity provider](https://docs.aw
 
 ## Deploying:
 
-`cdk --profile $YOUR_PROFILE_NAME deploy NetworkStack-$ENV (or --all)`
+`cdk --profile $YOUR_PROFILE_NAME deploy Network-$ENV (or --all)`
 
 Where `$ENV` can be any of the following:
 
@@ -69,8 +69,6 @@ Where `$ENV` can be any of the following:
 2. `test`
 3. `staging`
 4. `prod`
-
-And `$ORG` is your organization/company name in all lower case. This is also going to be your domain name followed by ".com".
 
 Example:
 

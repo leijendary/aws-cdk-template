@@ -28,7 +28,7 @@ export class ApiStack extends Stack {
   cluster: Cluster;
 
   constructor(scope: Construct, props: ApiStackProps) {
-    super(scope, `ApiStack-${environment}`, props);
+    super(scope, `Api-${environment}`, props);
 
     const { vpc, certificate } = props;
 

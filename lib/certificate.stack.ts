@@ -15,7 +15,7 @@ export class CertificateStack extends Stack {
   certificate: Certificate;
 
   constructor(scope: Construct, props: CertificateStackProps) {
-    super(scope, `CertificateStack-${environment}`, props);
+    super(scope, `Certificate-${environment}`, props);
 
     const { hostedZone } = props;
 

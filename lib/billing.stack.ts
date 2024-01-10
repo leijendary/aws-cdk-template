@@ -8,7 +8,7 @@ const { subscriber } = env;
 
 export class BillingStack extends Stack {
   constructor(scope: Construct) {
-    super(scope, "BillingStack");
+    super(scope, "Billing");
 
     this.budgets();
     this.anomalyMonitor();

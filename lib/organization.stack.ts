@@ -10,7 +10,7 @@ export class OrganizationStack extends Stack {
   organization: CfnOrganization;
 
   constructor(scope: Construct) {
-    super(scope, "OrganizationStack");
+    super(scope, "Organization");
 
     // Enable organizations in the current account
     this.enable();

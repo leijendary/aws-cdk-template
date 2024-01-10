@@ -22,7 +22,7 @@ export class CloudFrontStack extends Stack {
   s3Distribution: S3DistributionConstruct;
 
   constructor(scope: Construct, props: CloudFrontStackProps) {
-    super(scope, `CloudFrontStack-${environment}`, props);
+    super(scope, `CloudFront-${environment}`, props);
 
     const { bucket, certificate, hostedZone, loadBalancer } = props;
 
