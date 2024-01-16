@@ -23,6 +23,8 @@ export type AuroraConstructProps = {
 const environment = env.environment;
 
 export class AuroraConstruct extends DatabaseCluster {
+  identifier: string;
+
   constructor(scope: Construct, id: string, props: AuroraConstructProps) {
     const { vpc, name, securityGroup } = props;
     let readers: IClusterInstance[] = [];
@@ -33,8 +35,9 @@ export class AuroraConstruct extends DatabaseCluster {
     }
 
     const credentials = createCredentials(scope, name);
+    const clusterIdentifier = `${name}-${environment}`;
     const config: DatabaseClusterProps = {
-      clusterIdentifier: `${name}-${environment}`,
+      clusterIdentifier,
       engine: DatabaseClusterEngine.auroraPostgres({
         version: AuroraPostgresEngineVersion.VER_15_5,
       }),
@@ -57,6 +60,8 @@ export class AuroraConstruct extends DatabaseCluster {
     };
 
     super(scope, id, config);
+
+    this.identifier = clusterIdentifier;
   }
 }
 
