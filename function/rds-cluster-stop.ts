@@ -13,5 +13,5 @@ export const handler: Handler = async () => {
   const command = new StopDBClusterCommand(input);
   const response = await client.send(command);
 
-  console.log("Triggered stop commmand to", response.DBCluster?.DBClusterIdentifier);
+  console.log("Triggered stop command to", response.DBCluster?.DBClusterIdentifier);
 };
