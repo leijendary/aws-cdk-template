@@ -41,11 +41,11 @@ export class ApiAuroraCluster extends AuroraConstruct {
       resources: [`arn:aws:rds:${this.stack.region}:${this.stack.account}:cluster:${this.clusterIdentifier}`],
     });
     const lambda = new NodejsFunction(this, `RdsClusterStartFunction-${name}-${environment}`, {
+      functionName: `${this.clusterIdentifier}-rds-cluster-start`,
       entry: "function/rds-cluster-start.ts",
       environment: {
         IDENTIFIER: this.clusterIdentifier,
       },
-      functionName: `${this.clusterIdentifier}-rds-cluster-start`,
     });
     lambda.addToRolePolicy(policyStatement);
 
@@ -74,12 +74,11 @@ export class ApiAuroraCluster extends AuroraConstruct {
       resources: [`arn:aws:rds:${this.stack.region}:${this.stack.account}:cluster:${this.clusterIdentifier}`],
     });
     const lambda = new NodejsFunction(this, `RdsClusterStopFunction-${name}-${environment}`, {
+      functionName: `${this.clusterIdentifier}-rds-cluster-stop`,
       entry: "function/rds-cluster-stop.ts",
       environment: {
         IDENTIFIER: this.clusterIdentifier,
       },
-      functionName: `${this.clusterIdentifier}-rds-cluster-stop`,
-      logRetention: RetentionDays.FIVE_DAYS,
     });
     lambda.addToRolePolicy(policyStatement);
 
