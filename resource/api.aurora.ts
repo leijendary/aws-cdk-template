@@ -3,7 +3,6 @@ import { SecurityGroup, Vpc } from "aws-cdk-lib/aws-ec2";
 import { Rule, Schedule } from "aws-cdk-lib/aws-events";
 import { LambdaFunction } from "aws-cdk-lib/aws-events-targets";
 import { Effect, PolicyStatement } from "aws-cdk-lib/aws-iam";
-import { Architecture } from "aws-cdk-lib/aws-lambda";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
 import { Construct } from "constructs";
@@ -42,7 +41,6 @@ export class ApiAuroraCluster extends AuroraConstruct {
       resources: [`arn:aws:rds:${this.stack.region}:${this.stack.account}:cluster:${this.clusterIdentifier}`],
     });
     const lambda = new NodejsFunction(this, `RdsClusterStartFunction-${name}-${environment}`, {
-      architecture: Architecture.ARM_64,
       entry: "function/rds-cluster-start.ts",
       environment: {
         IDENTIFIER: this.clusterIdentifier,
@@ -76,7 +74,6 @@ export class ApiAuroraCluster extends AuroraConstruct {
       resources: [`arn:aws:rds:${this.stack.region}:${this.stack.account}:cluster:${this.clusterIdentifier}`],
     });
     const lambda = new NodejsFunction(this, `RdsClusterStopFunction-${name}-${environment}`, {
-      architecture: Architecture.ARM_64,
       entry: "function/rds-cluster-stop.ts",
       environment: {
         IDENTIFIER: this.clusterIdentifier,
