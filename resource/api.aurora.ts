@@ -93,7 +93,7 @@ export class ApiAuroraCluster extends AuroraConstruct {
     new Rule(this, `RdsClusterStopFunctionScheduler-${name}-${environment}`, {
       ruleName: `${this.clusterIdentifier}-rds-cluster-stop-scheduler`,
       schedule: Schedule.cron({
-        minute: "10",
+        minute: "0",
         hour: "22",
       }),
       targets: [target],

@@ -1,0 +1,43 @@
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      image-tag:
+        required: false
+        type: string
+        default: ${{ github.sha }}
+
+jobs:
+  cdk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: ${{ inputs.environment }}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ vars.AWS_REGION }}
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/DeploymentRole-${{ inputs.environment }}
+      - id: login-ecr
+        name: Login to ECR
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          mask-password: "true"
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.x
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Deploy AWS CDK
+        env:
+          ENVIRONMENT: ${{ inputs.environment }}
+          ORGANIZATION: ${{ vars.ORGANIZATION }}
+        run: |
+          npm ci
+          npm run cdk deploy -- --all --require-approval never
