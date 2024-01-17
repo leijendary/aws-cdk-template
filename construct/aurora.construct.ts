@@ -54,14 +54,15 @@ export class AuroraConstruct extends DatabaseCluster {
         subnetType: SubnetType.PRIVATE_ISOLATED,
       },
       securityGroups: [securityGroup],
+      preferredMaintenanceWindow: "Tue:22:30-Wed:23:00",
     };
 
     super(scope, id, config);
   }
 }
 
-const createCredentials = (scope: Construct, name: string) => {
+function createCredentials(scope: Construct, name: string) {
   const secret = Secret.fromSecretNameV2(scope, `AuroraSecret-${name}-${environment}`, `${name}-aurora-${environment}`);
 
   return Credentials.fromSecret(secret);
-};
+}
