@@ -16,8 +16,7 @@ type ApiStackProps = StackProps & {
   certificate: Certificate;
 };
 
-const { environment, config } = env;
-const { domainName } = config;
+const { environment } = env;
 
 export class ApiStack extends Stack {
   loadBalancerSecurityGroup: SecurityGroup;
@@ -36,7 +35,7 @@ export class ApiStack extends Stack {
     this.createGatewaySecurityGroup(vpc);
     this.createSecurityGroup(vpc);
     this.createLoadBalancer(vpc, certificate);
-    this.createFargateCluster(domainName, vpc);
+    this.createFargateCluster(vpc);
   }
 
   private createLoadBalancerSecurityGroup(vpc: Vpc) {
@@ -70,9 +69,8 @@ export class ApiStack extends Stack {
     this.listener = loadBalancer.securedListener;
   }
 
-  private createFargateCluster(domainName: string, vpc: Vpc) {
+  private createFargateCluster(vpc: Vpc) {
     this.cluster = new ApiFargateCluster(this, {
-      domainName,
       vpc,
     });
   }

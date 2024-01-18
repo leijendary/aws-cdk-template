@@ -1,25 +1,24 @@
 import { Vpc } from "aws-cdk-lib/aws-ec2";
+import { ClusterProps } from "aws-cdk-lib/aws-ecs";
 import { Construct } from "constructs";
 import env from "../env";
-import { FargateClusterConstruct, FargateClusterConstructProps } from "./../construct/ecs.construct";
+import { FargateClusterConstruct } from "./../construct/ecs.construct";
 
 type ApiFargateClusterProps = {
-  domainName: string;
   vpc: Vpc;
 };
 
-const environment = env.environment;
+const { environment } = env;
 
 export class ApiFargateCluster extends FargateClusterConstruct {
   constructor(scope: Construct, props: ApiFargateClusterProps) {
-    const { domainName, vpc } = props;
-    const clusterName = `api-cluster-${environment}`;
-    const config: FargateClusterConstructProps = {
+    const { vpc } = props;
+    const clusterName = `api-${environment}`;
+    const config: ClusterProps = {
       clusterName,
-      domainName,
       vpc,
     };
 
-    super(scope, `ApiCluster-${environment}`, config);
+    super(scope, `ApiFargateCluster-${environment}`, config);
   }
 }

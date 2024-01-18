@@ -7,7 +7,7 @@ const { cidrBlock } = config;
 
 export class AppVpc extends PublicVpcConstruct {
   constructor(scope: Construct) {
-    const vpcName = `app-vpc-${environment}`;
+    const vpcName = `app-${environment}`;
     const config: PublicVpcConstructProps = {
       vpcName,
       cidrBlock,
