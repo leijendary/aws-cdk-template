@@ -105,7 +105,7 @@ Below are the most commonly used secrets.
 
 Credentials for the AWS RDS Aurora database.
 
-Name: `$NAME-aurora-$ENV`. Where `$NAME` is the name of the user of the database cluster.
+Name: `/$ORGANIZATION/$ENV/aurora/$name`. Where `$NAME` is the name of the user of the database cluster.
 
 ```json
 {
@@ -118,7 +118,7 @@ Name: `$NAME-aurora-$ENV`. Where `$NAME` is the name of the user of the database
 
 Credentials for non-AWS created data storage.
 
-Name: `data-storage-$ENV`.
+Name: `/$ORGANIZATION/$ENV/data-storage`.
 
 ```json
 {
@@ -140,7 +140,7 @@ Name: `data-storage-$ENV`.
 
 Credentials for third party integrations.
 
-Name: `integration-$ENV`.
+Name: `/$ORGANIZATION/$ENV/integration`.
 
 ```json
 {
@@ -159,7 +159,7 @@ Name: `integration-$ENV`.
 
 Security related credentials like crypto, encryption, etc.
 
-Name: `security-$ENV`.
+Name: `/$ORGANIZATION/$ENV/security`.
 
 ```json
 {
