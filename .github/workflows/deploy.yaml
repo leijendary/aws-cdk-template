@@ -21,19 +21,21 @@ jobs:
           aws-region: ${{ vars.AWS_REGION }}
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/DeploymentRole-${{ inputs.environment }}
       - name: Login to registry
-        uses: aws-actions/amazon-ecr-login@v1
+        uses: aws-actions/amazon-ecr-login@v2
         with:
-          mask-password: "true"
+          mask-password: true
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20.x
+          node-version: latest
+          cache: npm
       - name: Checkout
         uses: actions/checkout@v3
       - name: Deploy AWS CDK
         env:
           ENVIRONMENT: ${{ inputs.environment }}
           ORGANIZATION: ${{ vars.ORGANIZATION }}
+          SUBSCRIBER: ${{ vars.SUBSCRIBER }}
         run: |
           npm ci
           npm run cdk deploy -- --all --require-approval never
