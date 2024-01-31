@@ -26,5 +26,5 @@ jobs:
           SUBSCRIBER: ${{ vars.SUBSCRIBER }}
         run: |
           npm ci
-          tsc
+          npm run build
           npm test
