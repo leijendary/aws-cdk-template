@@ -22,7 +22,6 @@ jobs:
     uses: ./.github/workflows/deploy.yaml
     with:
       environment: staging
-      image-tag: ${{ github.ref_name }}
     secrets: inherit
   deploy-prod:
     needs: build-prod
@@ -30,5 +29,4 @@ jobs:
     uses: ./.github/workflows/deploy.yaml
     with:
       environment: prod
-      image-tag: ${{ github.ref_name }}
     secrets: inherit

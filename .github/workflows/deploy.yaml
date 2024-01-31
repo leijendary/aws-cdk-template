@@ -4,10 +4,6 @@ on:
       environment:
         required: true
         type: string
-      image-tag:
-        required: false
-        type: string
-        default: ${{ github.sha }}
 
 jobs:
   cdk:
