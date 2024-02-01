@@ -11,27 +11,6 @@ Copy `.env.example` to `.env` and fill up the following details:
 2. `ORGANIZATION`: This is mostly used as the domain name.
 3. `SUBSCRIBER`: The email for billing alerts.
 
-## IAM Role:
-
-When creating an IAM role that has access to the CDK for deploying (like GitHub actions), create the following role:
-
-Name: `DeploymentRole-$ENV`.
-
-### Policy:
-
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": ["sts:AssumeRole"],
-      "Resource": ["arn:aws:iam::*:role/cdk-*"]
-    }
-  ]
-}
-```
-
 ### Trust:
 
 You have to [configure a role for GitHub OIDC identity provider](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-idp_oidc.html#idp_oidc_Create_GitHub).
@@ -54,6 +33,29 @@ You have to [configure a role for GitHub OIDC identity provider](https://docs.aw
           "token.actions.githubusercontent.com:sub": "repo:<GitHub organization>/*"
         }
       }
+    }
+  ]
+}
+```
+
+## IAM Role:
+
+When creating an IAM role that has access to the CDK for deploying (like GitHub actions), create the following role:
+
+Name: `DeploymentRole-$ENV`.
+
+Attach the trust policy created above. Then add the following inline policy:
+
+### Policy:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": ["sts:AssumeRole"],
+      "Resource": ["arn:aws:iam::<Account ID>:role/cdk-*"]
     }
   ]
 }
