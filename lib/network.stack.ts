@@ -1,8 +1,8 @@
 import { Stack, StackProps } from "aws-cdk-lib";
 import { Certificate, CertificateValidation } from "aws-cdk-lib/aws-certificatemanager";
-import { Vpc } from "aws-cdk-lib/aws-ec2";
 import { HostedZone } from "aws-cdk-lib/aws-route53";
 import { Construct } from "constructs";
+import { PublicVpcConstruct } from "../construct/vpc.construct";
 import env from "../env";
 import { AppVpc } from "../resource/app.vpc";
 
@@ -12,7 +12,7 @@ const { environment, config } = env;
 const { domainName } = config;
 
 export class NetworkStack extends Stack {
-  vpc: Vpc;
+  vpc: PublicVpcConstruct;
   hostedZone: HostedZone;
   certificate: Certificate;
 

@@ -1,5 +1,6 @@
-import { Peer, Port, SecurityGroup, SecurityGroupProps, Vpc } from "aws-cdk-lib/aws-ec2";
+import { ISecurityGroup, Peer, Port, SecurityGroup, SecurityGroupProps, Vpc } from "aws-cdk-lib/aws-ec2";
 import { Construct } from "constructs";
+import { PublicVpcConstruct } from "./vpc.construct";
 
 export type PublicSecurityGroupProps = SecurityGroupProps & {
   vpc: Vpc;
@@ -16,7 +17,7 @@ export type PeerSecurityGroupProps = SecurityGroupProps & {
 };
 
 export type AuroraSecurityGroupProps = SecurityGroupProps & {
-  vpc: Vpc;
+  vpc: PublicVpcConstruct;
   peer: SecurityGroup;
 };
 
@@ -107,12 +108,16 @@ export class AuroraSecurityGroup extends SecurityGroup {
 
     super(scope, id, config);
 
-    this.addRules(peer);
+    this.addRules(peer, vpc?.natGatewayProvider?.securityGroup);
   }
 
-  private addRules(peer: SecurityGroup) {
+  private addRules(peer: SecurityGroup, natGateway?: ISecurityGroup) {
     const postgres = Port.tcp(5432);
 
-    this.addIngressRule(peer, postgres, "Allow peer to connect to PostgreSQL");
+    this.addIngressRule(peer, postgres, "Allow service to connect to PostgreSQL");
+
+    if (!!natGateway) {
+      this.addIngressRule(natGateway, postgres, "Allow custom NAT Gateway to connect to PostgreSQL");
+    }
   }
 }

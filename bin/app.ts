@@ -4,6 +4,7 @@ import "source-map-support/register";
 import env from "../env";
 import { ApiStack } from "../lib/api.stack";
 import { BillingStack } from "../lib/billing.stack";
+import { BucketStack } from "../lib/bucket.stack";
 import { CertificateStack } from "../lib/certificate.stack";
 import { CloudFrontStack } from "../lib/cloudfront.stack";
 import { DatabaseStack } from "../lib/database.stack";
@@ -44,8 +45,11 @@ const { certificate: regionalCertificate } = new CertificateStack(app, {
 // Docker repository
 new RepositoryStack(app, props);
 
+// Bucket
+const { bucket } = new BucketStack(app, props);
+
 // API
-const { bucket, loadBalancer, securityGroup } = new ApiStack(app, {
+const { loadBalancer, securityGroup } = new ApiStack(app, {
   vpc,
   certificate: domainCertificate,
   ...props,

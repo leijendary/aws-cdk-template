@@ -2,12 +2,13 @@ import { Stack, StackProps } from "aws-cdk-lib";
 import { SecurityGroup, Vpc } from "aws-cdk-lib/aws-ec2";
 import { DatabaseCluster } from "aws-cdk-lib/aws-rds";
 import { Construct } from "constructs";
+import { PublicVpcConstruct } from "../construct/vpc.construct";
 import env from "../env";
 import { ApiAuroraCluster } from "../resource/api.aurora";
 import { ApiAuroraSecurityGroup } from "../resource/security-group/api-aurora.security-group";
 
 type DatabaseStackProps = StackProps & {
-  vpc: Vpc;
+  vpc: PublicVpcConstruct;
   securityGroup: SecurityGroup;
 };
 
@@ -26,7 +27,7 @@ export class DatabaseStack extends Stack {
     this.createApiAuroraCluster(vpc);
   }
 
-  private createApiAuroraSecurityGroup(vpc: Vpc, securityGroup: SecurityGroup) {
+  private createApiAuroraSecurityGroup(vpc: PublicVpcConstruct, securityGroup: SecurityGroup) {
     this.apiAuroraSecurityGroup = new ApiAuroraSecurityGroup(this, {
       vpc,
       peer: securityGroup,

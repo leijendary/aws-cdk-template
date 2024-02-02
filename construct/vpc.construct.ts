@@ -21,21 +21,23 @@ import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
 import { Construct } from "constructs";
 import env, { isProd } from "../env";
 
-const { environment } = env;
+const { environment, config } = env;
+const { cidrBlock } = config;
 
 export type PublicVpcConstructProps = VpcProps & {
-  cidrBlock: string;
+  vpcName: string;
 };
 
 export class PublicVpcConstruct extends Vpc {
+  vpcName: string;
+  natGatewayProvider?: NatInstanceProvider;
+
   constructor(scope: Construct, id: string, props: PublicVpcConstructProps) {
-    const { cidrBlock, ...rest } = props;
     const natGatewayProvider = getNatGatewayProvider();
     const config: VpcProps = {
-      vpcName: id,
-      ipAddresses: IpAddresses.cidr(cidrBlock),
-      maxAzs: 2,
+      maxAzs: isProd ? 2 : 1,
       natGateways: isProd ? 2 : 1,
+      ipAddresses: IpAddresses.cidr(cidrBlock),
       subnetConfiguration: [
         {
           name: "Public",
@@ -55,33 +57,36 @@ export class PublicVpcConstruct extends Vpc {
         },
       ],
       natGatewayProvider,
-      ...rest,
+      ...props,
     };
 
     super(scope, id, config);
 
-    this.configureNatGateway(props.vpcName!!, natGatewayProvider);
+    this.vpcName = props.vpcName;
+    this.natGatewayProvider = natGatewayProvider;
+    this.configureNatGateway();
   }
 
-  private configureNatGateway(name: string, natGatewayProvider?: NatInstanceProvider) {
-    if (!natGatewayProvider) {
+  private configureNatGateway() {
+    if (!this.natGatewayProvider) {
       return;
     }
 
-    natGatewayProvider.securityGroup.addIngressRule(Peer.ipv4(this.vpcCidrBlock), Port.allTraffic());
+    this.natGatewayProvider.securityGroup.addIngressRule(Peer.ipv4(this.vpcCidrBlock), Port.allTraffic());
 
-    this.createStartSchedule(name, natGatewayProvider.configuredGateways[0].gatewayId);
-    this.createStopSchedule(name, natGatewayProvider.configuredGateways[0].gatewayId);
+    this.createStartSchedule();
+    this.createStopSchedule();
   }
 
-  private createStartSchedule(name: string, instanceId: string) {
+  private createStartSchedule() {
+    const instanceId = this.natGatewayProvider!!.configuredGateways[0].gatewayId;
     const policyStatement = new PolicyStatement({
       effect: Effect.ALLOW,
       actions: ["ec2:StartInstances"],
       resources: [`arn:aws:ec2:${this.stack.region}:${this.stack.account}:instance/${instanceId}`],
     });
-    const lambda = new NodejsFunction(this, `Ec2InstanceStartFunction-${name}-${environment}`, {
-      functionName: `${name}-ec2-instance-start`,
+    const lambda = new NodejsFunction(this, `Ec2InstanceStartFunction-${this.vpcName}-${environment}`, {
+      functionName: `${this.vpcName}-ec2-instance-start`,
       entry: "function/ec2-instance-start.ts",
       environment: {
         INSTANCE_ID: instanceId,
@@ -89,7 +94,7 @@ export class PublicVpcConstruct extends Vpc {
     });
     lambda.addToRolePolicy(policyStatement);
 
-    new LogGroup(this, `Ec2InstanceStartFunctionLogGroup-${name}-${environment}`, {
+    new LogGroup(this, `Ec2InstanceStartFunctionLogGroup-${this.vpcName}-${environment}`, {
       logGroupName: `/aws/lambda/${lambda.functionName}`,
       removalPolicy: RemovalPolicy.DESTROY,
       retention: RetentionDays.FIVE_DAYS,
@@ -97,8 +102,8 @@ export class PublicVpcConstruct extends Vpc {
 
     const target = new LambdaFunction(lambda);
 
-    new Rule(this, `Ec2InstanceStartFunctionScheduler-${name}-${environment}`, {
-      ruleName: `${name}-ec2-instance-start-scheduler`,
+    new Rule(this, `Ec2InstanceStartFunctionScheduler-${this.vpcName}-${environment}`, {
+      ruleName: `${this.vpcName}-ec2-instance-start-scheduler`,
       schedule: Schedule.cron({
         minute: "0",
         hour: "10",
@@ -107,14 +112,15 @@ export class PublicVpcConstruct extends Vpc {
     });
   }
 
-  private createStopSchedule(name: string, instanceId: string) {
+  private createStopSchedule() {
+    const instanceId = this.natGatewayProvider!!.configuredGateways[0].gatewayId;
     const policyStatement = new PolicyStatement({
       effect: Effect.ALLOW,
       actions: ["ec2:StopInstances"],
       resources: [`arn:aws:ec2:${this.stack.region}:${this.stack.account}:instance/${instanceId}`],
     });
-    const lambda = new NodejsFunction(this, `Ec2InstanceStopFunction-${name}-${environment}`, {
-      functionName: `${name}-ec2-instance-stop`,
+    const lambda = new NodejsFunction(this, `Ec2InstanceStopFunction-${this.vpcName}-${environment}`, {
+      functionName: `${this.vpcName}-ec2-instance-stop`,
       entry: "function/ec2-instance-stop.ts",
       environment: {
         INSTANCE_ID: instanceId,
@@ -122,7 +128,7 @@ export class PublicVpcConstruct extends Vpc {
     });
     lambda.addToRolePolicy(policyStatement);
 
-    new LogGroup(this, `Ec2InstanceStopFunctionLogGroup-${name}-${environment}`, {
+    new LogGroup(this, `Ec2InstanceStopFunctionLogGroup-${this.vpcName}-${environment}`, {
       logGroupName: `/aws/lambda/${lambda.functionName}`,
       removalPolicy: RemovalPolicy.DESTROY,
       retention: RetentionDays.FIVE_DAYS,
@@ -130,8 +136,8 @@ export class PublicVpcConstruct extends Vpc {
 
     const target = new LambdaFunction(lambda);
 
-    new Rule(this, `Ec2InstanceStopFunctionScheduler-${name}-${environment}`, {
-      ruleName: `${name}-ec2-instance-stop-scheduler`,
+    new Rule(this, `Ec2InstanceStopFunctionScheduler-${this.vpcName}-${environment}`, {
+      ruleName: `${this.vpcName}-ec2-instance-stop-scheduler`,
       schedule: Schedule.cron({
         minute: "0",
         hour: "22",

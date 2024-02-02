@@ -3,10 +3,9 @@ import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
 import { SecurityGroup, Vpc } from "aws-cdk-lib/aws-ec2";
 import { Cluster } from "aws-cdk-lib/aws-ecs";
 import { ApplicationListener, ApplicationLoadBalancer } from "aws-cdk-lib/aws-elasticloadbalancingv2";
-import { Bucket } from "aws-cdk-lib/aws-s3";
 import { Construct } from "constructs";
+import { PublicVpcConstruct } from "../construct/vpc.construct";
 import env from "../env";
-import { ApiBucket } from "../resource/api.bucket";
 import { ApiFargateCluster } from "../resource/api.ecs";
 import { ApiLoadBalancer } from "../resource/api.load-balancer";
 import { ApiGatewaySecurityGroup } from "../resource/security-group/api-gateway.security-group";
@@ -14,14 +13,13 @@ import { ApiLoadBalancerSecurityGroup } from "../resource/security-group/api-loa
 import { ApiSecurityGroup } from "../resource/security-group/api.security-group";
 
 type ApiStackProps = StackProps & {
-  vpc: Vpc;
+  vpc: PublicVpcConstruct;
   certificate: Certificate;
 };
 
 const { environment } = env;
 
 export class ApiStack extends Stack {
-  bucket: Bucket;
   loadBalancerSecurityGroup: SecurityGroup;
   gatewaySecurityGroup: SecurityGroup;
   securityGroup: SecurityGroup;
@@ -34,16 +32,11 @@ export class ApiStack extends Stack {
 
     const { vpc, certificate } = props;
 
-    this.createBucket();
     this.createLoadBalancerSecurityGroup(vpc);
     this.createGatewaySecurityGroup(vpc);
     this.createSecurityGroup(vpc);
     this.createLoadBalancer(vpc, certificate);
     this.createFargateCluster(vpc);
-  }
-
-  private createBucket() {
-    this.bucket = new ApiBucket(this);
   }
 
   private createLoadBalancerSecurityGroup(vpc: Vpc) {
