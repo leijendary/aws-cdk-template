@@ -20,10 +20,10 @@ export class RepositoryConstruct extends Repository {
           maxImageAge: Duration.days(1),
         },
         {
-          description: "Keep only up to 20 images",
+          description: "Keep only up to 10 images",
           rulePriority: 2,
           tagStatus: TagStatus.ANY,
-          maxImageCount: 20,
+          maxImageCount: 10,
         },
       ],
     };
