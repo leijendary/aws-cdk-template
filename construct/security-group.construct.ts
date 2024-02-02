@@ -30,7 +30,6 @@ export class PublicSecurityGroup extends SecurityGroup {
   constructor(scope: Construct, id: string, props: PublicSecurityGroupProps) {
     const { vpc, ...rest } = props;
     const config: SecurityGroupProps = {
-      securityGroupName: id,
       vpc,
       ...defaults,
       ...rest,
@@ -53,7 +52,6 @@ export class GatewaySecurityGroup extends SecurityGroup {
   constructor(scope: Construct, id: string, props: GatewaySecurityGroupProps) {
     const { vpc, peer, ...rest } = props;
     const config: SecurityGroupProps = {
-      securityGroupName: id,
       vpc,
       ...defaults,
       ...rest,
@@ -75,7 +73,6 @@ export class PeerSecurityGroup extends SecurityGroup {
   constructor(scope: Construct, id: string, props: PeerSecurityGroupProps) {
     const { vpc, peer, ...rest } = props;
     const config: SecurityGroupProps = {
-      securityGroupName: id,
       vpc,
       ...defaults,
       ...rest,
@@ -101,7 +98,6 @@ export class AuroraSecurityGroup extends SecurityGroup {
   constructor(scope: Construct, id: string, props: AuroraSecurityGroupProps) {
     const { vpc, peer, ...rest } = props;
     const config: SecurityGroupProps = {
-      securityGroupName: id,
       vpc,
       ...rest,
     };
