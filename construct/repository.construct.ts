@@ -1,5 +1,5 @@
 import { Duration, RemovalPolicy } from "aws-cdk-lib";
-import { Repository, RepositoryEncryption, RepositoryProps, TagStatus } from "aws-cdk-lib/aws-ecr";
+import { Repository, RepositoryProps, TagStatus } from "aws-cdk-lib/aws-ecr";
 import { Construct } from "constructs";
 
 export type RepositoryConstructProps = {
@@ -11,7 +11,6 @@ export class RepositoryConstruct extends Repository {
     const { name } = props;
     const config: RepositoryProps = {
       repositoryName: name,
-      encryption: RepositoryEncryption.KMS,
       removalPolicy: RemovalPolicy.DESTROY,
       lifecycleRules: [
         {

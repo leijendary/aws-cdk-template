@@ -4,7 +4,6 @@ import "source-map-support/register";
 import env from "../env";
 import { ApiStack } from "../lib/api.stack";
 import { BillingStack } from "../lib/billing.stack";
-import { BucketStack } from "../lib/bucket.stack";
 import { CertificateStack } from "../lib/certificate.stack";
 import { CloudFrontStack } from "../lib/cloudfront.stack";
 import { DatabaseStack } from "../lib/database.stack";
@@ -31,9 +30,6 @@ new OrganizationStack(app);
 // Network
 const { vpc, hostedZone, certificate: domainCertificate } = new NetworkStack(app, props);
 
-// Bucket
-const { bucket } = new BucketStack(app, props);
-
 // Certificate
 const { certificate: regionalCertificate } = new CertificateStack(app, {
   hostedZone,
@@ -49,7 +45,7 @@ const { certificate: regionalCertificate } = new CertificateStack(app, {
 new RepositoryStack(app, props);
 
 // API
-const { loadBalancer, securityGroup } = new ApiStack(app, {
+const { bucket, loadBalancer, securityGroup } = new ApiStack(app, {
   vpc,
   certificate: domainCertificate,
   ...props,
