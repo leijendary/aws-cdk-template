@@ -33,7 +33,7 @@ export class AuroraConstruct extends DatabaseCluster {
     let readers: IClusterInstance[] = [];
 
     if (isProd) {
-      const reader = ClusterInstance.serverlessV2("reader", { scaleWithWriter: true });
+      const reader = ClusterInstance.serverlessV2("reader");
       readers.push(reader);
     }
 
