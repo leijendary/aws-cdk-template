@@ -17,7 +17,8 @@ When creating an IAM role that has access to the CDK for deploying (like GitHub 
 
 Name: `DeploymentRole-$ENV`.
 
-Attach the trust policy created above. Then add the following inline policy:
+1. To access ECR repositories, use attach the `AmazonEC2ContainerRegistryPowerUser` permission.
+2. Add the following inline policy and name it `AssumeRoleCDK`:
 
 ### Policy:
 
@@ -36,7 +37,7 @@ Attach the trust policy created above. Then add the following inline policy:
 
 ### Trust:
 
-You have to [configure a role for GitHub OIDC identity provider](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-idp_oidc.html#idp_oidc_Create_GitHub).
+You have to [configure a role for GitHub OIDC identity provider](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-idp_oidc.html#idp_oidc_Create_GitHub) first, then attach the policy below:
 
 ```json
 {
@@ -91,8 +92,8 @@ Refer to [Generate Public Keys](https://docs.aws.amazon.com/AmazonCloudFront/lat
 _**TL;DR:**_
 
 1. Generate Private Key: `openssl genrsa -out private_key.pem 2048`
-2. Generate Public Key: `openssl genrsa -out private_key.pem 2048`
-3. Copy the contents of `private_key.pem` to `security-$ENV` :: `cloudFront.privateKey`.
+2. Generate Public Key: `openssl rsa -pubout -in private_key.pem -out public_key.pem`
+3. Copy the contents of `private_key.pem` to the `$ORGANIZATION/$ENV/security` :: `cloudFront.privateKey` secret.
 4. Copy `public_key.pem` to the `security` folder with the format: `distribution-key.${environment}.pem`
 
 ## Secrets:
