@@ -64,7 +64,14 @@ You have to [configure a role for GitHub OIDC identity provider](https://docs.aw
 
 ## Deploying:
 
-`cdk --profile $YOUR_PROFILE_NAME deploy Network-$ENV (or --all)`
+Execute the following commands locally first before committing to git:
+
+`cdk --profile $YOUR_PROFILE_NAME synth --all`
+`cdk --profile $YOUR_PROFILE_NAME bootstrap --all`
+
+Then execute the actual deployment:
+
+`cdk --profile $YOUR_PROFILE_NAME deploy --all (or specific like Network-$ENV)`
 
 Where `$ENV` can be any of the following:
 
