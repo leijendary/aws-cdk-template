@@ -25,7 +25,7 @@ export type AuroraConstructProps = {
   securityGroup: SecurityGroup;
 };
 
-const environment = env.environment;
+const { environment, organization } = env;
 
 export class AuroraConstruct extends DatabaseCluster {
   constructor(scope: Construct, id: string, props: AuroraConstructProps) {
@@ -138,7 +138,11 @@ export class AuroraConstruct extends DatabaseCluster {
 }
 
 function createCredentials(scope: Construct, name: string) {
-  const secret = Secret.fromSecretNameV2(scope, `AuroraSecret-${name}-${environment}`, `${name}-aurora-${environment}`);
+  const secret = Secret.fromSecretNameV2(
+    scope,
+    `AuroraSecret-${name}-${environment}`,
+    `${organization}/${environment}/aurora/${name}`
+  );
 
   return Credentials.fromSecret(secret);
 }
