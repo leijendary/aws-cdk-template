@@ -100,7 +100,7 @@ _**TL;DR:**_
 
 1. Generate Private Key: `openssl genrsa -out private_key.pem 2048`
 2. Generate Public Key: `openssl rsa -pubout -in private_key.pem -out public_key.pem`
-3. Copy the contents of `private_key.pem` to the `$ORGANIZATION/$ENV/security` :: `cloudFront.privateKey` secret.
+3. Copy the contents of `private_key.pem` to the `$ENV/security` :: `cloudFront.privateKey` secret.
 4. Copy `public_key.pem` to the `security` folder with the format: `distribution-key.${environment}.pem`
 
 ## Secrets:
@@ -115,7 +115,7 @@ Below are the most commonly used secrets.
 
 Credentials for the AWS RDS Aurora database.
 
-Name: `$ORGANIZATION/$ENV/aurora/$NAME`. Where `$NAME` is the name of the user of the database cluster.
+Name: `$ENV/aurora/$NAME`. Where `$NAME` is the name of the user of the database cluster.
 
 ```json
 {
@@ -128,7 +128,7 @@ Name: `$ORGANIZATION/$ENV/aurora/$NAME`. Where `$NAME` is the name of the user o
 
 Credentials for non-AWS created data storage.
 
-Name: `$ORGANIZATION/$ENV/data-storage`.
+Name: `$ENV/data-storage`.
 
 ```json
 {
@@ -150,7 +150,7 @@ Name: `$ORGANIZATION/$ENV/data-storage`.
 
 Credentials for third party integrations.
 
-Name: `$ORGANIZATION/$ENV/integration`.
+Name: `$ENV/integration`.
 
 ```json
 {
@@ -169,7 +169,7 @@ Name: `$ORGANIZATION/$ENV/integration`.
 
 Security related credentials like crypto, encryption, etc.
 
-Name: `$ORGANIZATION/$ENV/security`.
+Name: `$ENV/security`.
 
 ```json
 {
