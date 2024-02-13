@@ -13,7 +13,7 @@ jobs:
   cdk:
     name: CDK
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 60
     environment: ${{ inputs.environment }}
     steps:
       - name: Configure AWS credentials
