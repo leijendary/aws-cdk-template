@@ -43,7 +43,6 @@ export class AuroraConstruct extends DatabaseCluster {
       engine: DatabaseClusterEngine.auroraPostgres({
         version: AuroraPostgresEngineVersion.VER_15_5,
       }),
-      serverlessV2MinCapacity: 0.5,
       serverlessV2MaxCapacity: isProd ? 16 : 1,
       writer: ClusterInstance.serverlessV2("writer"),
       readers,
