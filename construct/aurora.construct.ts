@@ -59,7 +59,7 @@ export class AuroraConstruct extends DatabaseCluster {
         subnetType: SubnetType.PRIVATE_ISOLATED,
       },
       securityGroups: [securityGroup],
-      preferredMaintenanceWindow: "Tue:22:00-Wed:22:30",
+      preferredMaintenanceWindow: "Tue:22:00-Tue:22:30",
     };
 
     super(scope, id, config);
