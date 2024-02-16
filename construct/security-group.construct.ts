@@ -1,24 +1,29 @@
 import { ISecurityGroup, Peer, Port, SecurityGroup, SecurityGroupProps, Vpc } from "aws-cdk-lib/aws-ec2";
 import { Construct } from "constructs";
+import env from "../env";
 import { PublicVpcConstruct } from "./vpc.construct";
 
-export type PublicSecurityGroupProps = SecurityGroupProps & {
+export type PublicSecurityGroupProps = {
   vpc: Vpc;
+  name: string
 };
 
-export type GatewaySecurityGroupProps = SecurityGroupProps & {
-  vpc: Vpc;
-  peer: SecurityGroup;
-};
-
-export type PeerSecurityGroupProps = SecurityGroupProps & {
+export type GatewaySecurityGroupProps = {
   vpc: Vpc;
   peer: SecurityGroup;
+  name: string
 };
 
-export type AuroraSecurityGroupProps = SecurityGroupProps & {
+export type PeerSecurityGroupProps = {
+  vpc: Vpc;
+  peer: SecurityGroup;
+  name: string
+};
+
+export type AuroraSecurityGroupProps = {
   vpc: PublicVpcConstruct;
   peer: SecurityGroup;
+  name: string
 };
 
 const defaults: Partial<SecurityGroupProps> = {
@@ -26,13 +31,15 @@ const defaults: Partial<SecurityGroupProps> = {
   allowAllIpv6Outbound: true,
 };
 
+const environment = env.environment;
+
 export class PublicSecurityGroup extends SecurityGroup {
   constructor(scope: Construct, id: string, props: PublicSecurityGroupProps) {
-    const { vpc, ...rest } = props;
+    const { vpc, name } = props;
     const config: SecurityGroupProps = {
       vpc,
+      securityGroupName: `${name}-${environment}`
       ...defaults,
-      ...rest,
     };
 
     super(scope, id, config);
@@ -50,11 +57,11 @@ export class PublicSecurityGroup extends SecurityGroup {
 
 export class GatewaySecurityGroup extends SecurityGroup {
   constructor(scope: Construct, id: string, props: GatewaySecurityGroupProps) {
-    const { vpc, peer, ...rest } = props;
+    const { vpc, peer, name } = props;
     const config: SecurityGroupProps = {
       vpc,
+      securityGroupName: `${name}-${environment}`,
       ...defaults,
-      ...rest,
     };
 
     super(scope, id, config);
@@ -71,11 +78,11 @@ export class GatewaySecurityGroup extends SecurityGroup {
 
 export class PeerSecurityGroup extends SecurityGroup {
   constructor(scope: Construct, id: string, props: PeerSecurityGroupProps) {
-    const { vpc, peer, ...rest } = props;
+    const { vpc, peer, name } = props;
     const config: SecurityGroupProps = {
       vpc,
+      securityGroupName: `${name}-${environment}`,
       ...defaults,
-      ...rest,
     };
 
     super(scope, id, config);
@@ -96,10 +103,10 @@ export class PeerSecurityGroup extends SecurityGroup {
 
 export class AuroraSecurityGroup extends SecurityGroup {
   constructor(scope: Construct, id: string, props: AuroraSecurityGroupProps) {
-    const { vpc, peer, ...rest } = props;
+    const { vpc, peer, name } = props;
     const config: SecurityGroupProps = {
       vpc,
-      ...rest,
+      securityGroupName: `${name}-${environment}`
     };
 
     super(scope, id, config);

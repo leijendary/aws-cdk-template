@@ -16,7 +16,7 @@ export class ApiGatewaySecurityGroup extends GatewaySecurityGroup {
     const config: GatewaySecurityGroupProps = {
       vpc,
       peer,
-      securityGroupName: `api-gateway-${environment}`,
+      name: "api-gateway",
     };
 
     super(scope, `ApiGatewaySecurityGroup-${environment}`, config);

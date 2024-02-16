@@ -16,7 +16,7 @@ export class ApiSecurityGroup extends PeerSecurityGroup {
     const config: PeerSecurityGroupProps = {
       vpc,
       peer,
-      securityGroupName: `api-${environment}`,
+      name: "api",
     };
 
     super(scope, `ApiSecurityGroup-${environment}`, config);

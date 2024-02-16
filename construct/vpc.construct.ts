@@ -30,18 +30,19 @@ import env, { isProd } from "../env";
 const { environment, config } = env;
 const { cidrBlock } = config;
 
-export type PublicVpcConstructProps = VpcProps & {
-  vpcName: string;
+export type PublicVpcConstructProps = {
+  name: string;
 };
 
 export class PublicVpcConstruct extends Vpc {
-  vpcName: string;
   natGatewayProvider?: NatInstanceProvider;
   bastion?: Instance;
 
   constructor(scope: Construct, id: string, props: PublicVpcConstructProps) {
+    const { name } = props;
     const natGatewayProvider = getNatGatewayProvider();
     const config: VpcProps = {
+      vpcName: `${name}-${environment}`,
       maxAzs: isProd ? 2 : 1,
       natGateways: isProd ? 2 : 1,
       ipAddresses: IpAddresses.cidr(cidrBlock),
@@ -64,18 +65,16 @@ export class PublicVpcConstruct extends Vpc {
         },
       ],
       natGatewayProvider,
-      ...props,
     };
 
     super(scope, id, config);
 
-    this.vpcName = props.vpcName;
     this.natGatewayProvider = natGatewayProvider;
-    this.configureNatGateway();
-    this.createBastion();
+    this.configureNatGateway(name);
+    this.createBastion(name);
   }
 
-  private configureNatGateway() {
+  private configureNatGateway(name: string) {
     if (!this.natGatewayProvider) {
       return;
     }
@@ -84,23 +83,23 @@ export class PublicVpcConstruct extends Vpc {
 
     const instanceId = this.natGatewayProvider.configuredGateways[0].gatewayId;
 
-    this.createStartSchedule(instanceId);
-    this.createStopSchedule(instanceId);
+    this.createStartSchedule(instanceId, name);
+    this.createStopSchedule(instanceId, name);
   }
 
-  private createBastion() {
+  private createBastion(name: string) {
     // Skip bastion creation when not in production, the custom NAT gateway is used as bastion for non-prod.
     if (!isProd) {
       return;
     }
 
-    const securityGroup = new SecurityGroup(this, `BastionSecurityGroup-${this.vpcName}-${environment}`, {
-      securityGroupName: `${this.vpcName}-bastion-${environment}`,
+    const securityGroup = new SecurityGroup(this, `BastionSecurityGroup-${name}-${environment}`, {
+      securityGroupName: `${name}-${environment}-bastion`,
       description: "Security Group for the Bastion Host",
       vpc: this,
     });
     const config: InstanceProps = {
-      instanceName: `${this.vpcName}-bastion-${environment}`,
+      instanceName: `${name}-${environment}-bastion`,
       instanceType: InstanceType.of(InstanceClass.T4G, InstanceSize.NANO),
       machineImage: new AmazonLinuxImage({
         generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
@@ -109,21 +108,21 @@ export class PublicVpcConstruct extends Vpc {
       vpc: this,
       securityGroup,
     };
-    this.bastion = new Instance(this, `Bastion-${this.vpcName}-${environment}`, config);
+    this.bastion = new Instance(this, `Bastion-${name}-${environment}`, config);
     this.bastion.role.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName("AmazonSSMManagedInstanceCore"));
 
-    this.createStartSchedule(this.bastion.instanceId);
-    this.createStopSchedule(this.bastion.instanceId);
+    this.createStartSchedule(this.bastion.instanceId, name);
+    this.createStopSchedule(this.bastion.instanceId, name);
   }
 
-  private createStartSchedule(instanceId: string) {
+  private createStartSchedule(instanceId: string, name: string) {
     const policyStatement = new PolicyStatement({
       effect: Effect.ALLOW,
       actions: ["ec2:StartInstances"],
       resources: [`arn:aws:ec2:${this.stack.region}:${this.stack.account}:instance/${instanceId}`],
     });
-    const lambda = new NodejsFunction(this, `Ec2InstanceStartFunction-${this.vpcName}-${environment}`, {
-      functionName: `${this.vpcName}-ec2-instance-start-${environment}`,
+    const lambda = new NodejsFunction(this, `Ec2InstanceStartFunction-${name}-${environment}`, {
+      functionName: `${name}-${environment}-ec2-instance-start`,
       entry: "function/ec2-instance-start.ts",
       environment: {
         INSTANCE_ID: instanceId,
@@ -131,13 +130,13 @@ export class PublicVpcConstruct extends Vpc {
     });
     lambda.addToRolePolicy(policyStatement);
 
-    new LogGroup(this, `Ec2InstanceStartFunctionLogGroup-${this.vpcName}-${environment}`, {
+    new LogGroup(this, `Ec2InstanceStartFunctionLogGroup-${name}-${environment}`, {
       logGroupName: `/aws/lambda/${lambda.functionName}`,
       removalPolicy: RemovalPolicy.DESTROY,
       retention: RetentionDays.FIVE_DAYS,
     });
-    new Rule(this, `Ec2InstanceStartFunctionScheduler-${this.vpcName}-${environment}`, {
-      ruleName: `${this.vpcName}-ec2-instance-start-scheduler-${environment}`,
+    new Rule(this, `Ec2InstanceStartFunctionScheduler-${name}-${environment}`, {
+      ruleName: `${name}-${environment}-ec2-instance-start-scheduler`,
       schedule: Schedule.cron({
         minute: "0",
         hour: "10",
@@ -146,14 +145,14 @@ export class PublicVpcConstruct extends Vpc {
     });
   }
 
-  private createStopSchedule(instanceId: string) {
+  private createStopSchedule(instanceId: string, name: string) {
     const policyStatement = new PolicyStatement({
       effect: Effect.ALLOW,
       actions: ["ec2:StopInstances"],
       resources: [`arn:aws:ec2:${this.stack.region}:${this.stack.account}:instance/${instanceId}`],
     });
-    const lambda = new NodejsFunction(this, `Ec2InstanceStopFunction-${this.vpcName}-${environment}`, {
-      functionName: `${this.vpcName}-ec2-instance-stop-${environment}`,
+    const lambda = new NodejsFunction(this, `Ec2InstanceStopFunction-${name}-${environment}`, {
+      functionName: `${name}-${environment}-ec2-instance-stop`,
       entry: "function/ec2-instance-stop.ts",
       environment: {
         INSTANCE_ID: instanceId,
@@ -161,13 +160,13 @@ export class PublicVpcConstruct extends Vpc {
     });
     lambda.addToRolePolicy(policyStatement);
 
-    new LogGroup(this, `Ec2InstanceStopFunctionLogGroup-${this.vpcName}-${environment}`, {
+    new LogGroup(this, `Ec2InstanceStopFunctionLogGroup-${name}-${environment}`, {
       logGroupName: `/aws/lambda/${lambda.functionName}`,
       removalPolicy: RemovalPolicy.DESTROY,
       retention: RetentionDays.FIVE_DAYS,
     });
-    new Rule(this, `Ec2InstanceStopFunctionScheduler-${this.vpcName}-${environment}`, {
-      ruleName: `${this.vpcName}-ec2-instance-stop-scheduler-${environment}`,
+    new Rule(this, `Ec2InstanceStopFunctionScheduler-${name}-${environment}`, {
+      ruleName: `${name}-${environment}-ec2-instance-stop-scheduler`,
       schedule: Schedule.cron({
         minute: "0",
         hour: "22",

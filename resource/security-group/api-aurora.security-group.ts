@@ -17,7 +17,7 @@ export class ApiAuroraSecurityGroup extends AuroraSecurityGroup {
     const config: AuroraSecurityGroupProps = {
       vpc,
       peer,
-      securityGroupName: `api-aurora-${environment}`,
+      name: `api-aurora`,
     };
 
     super(scope, `ApiAuroraSecurityGroup-${environment}`, config);

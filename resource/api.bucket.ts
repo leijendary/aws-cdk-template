@@ -9,13 +9,9 @@ const { domainName } = config;
 export class ApiBucket extends Bucket {
   constructor(scope: Construct) {
     const allowedOrigins = [`https://${domainName}`];
-    let removalPolicy = RemovalPolicy.RETAIN;
-    let versioned = true;
 
     if (!isProd) {
       allowedOrigins.push("http://localhost:3000");
-      removalPolicy = RemovalPolicy.DESTROY;
-      versioned = false;
     }
 
     const config: BucketProps = {
@@ -29,8 +25,8 @@ export class ApiBucket extends Bucket {
           exposedHeaders: ["Access-Control-Allow-Origin", "ETag"],
         },
       ],
-      removalPolicy,
-      versioned,
+      removalPolicy: isProd ? RemovalPolicy.RETAIN : RemovalPolicy.DESTROY,
+      versioned: isProd,
     };
 
     super(scope, `ApiBucket-${environment}`, config);

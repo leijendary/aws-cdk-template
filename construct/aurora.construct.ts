@@ -71,7 +71,7 @@ export class AuroraConstruct extends DatabaseCluster {
       resources: [`arn:aws:rds:${this.stack.region}:${this.stack.account}:cluster:${this.clusterIdentifier}`],
     });
     const lambda = new NodejsFunction(this, `RdsClusterStartFunction-${name}-${environment}`, {
-      functionName: `${this.clusterIdentifier}-rds-cluster-start-${environment}`,
+      functionName: `${this.clusterIdentifier}-rds-cluster-start`,
       entry: "function/rds-cluster-start.ts",
       environment: {
         IDENTIFIER: this.clusterIdentifier,
@@ -85,7 +85,7 @@ export class AuroraConstruct extends DatabaseCluster {
       retention: RetentionDays.FIVE_DAYS,
     });
     new Rule(this, `RdsClusterStartFunctionScheduler-${name}-${environment}`, {
-      ruleName: `${this.clusterIdentifier}-rds-cluster-start-scheduler-${environment}`,
+      ruleName: `${this.clusterIdentifier}-rds-cluster-start-scheduler`,
       schedule: Schedule.cron({
         minute: "55",
         hour: "09",
@@ -101,7 +101,7 @@ export class AuroraConstruct extends DatabaseCluster {
       resources: [`arn:aws:rds:${this.stack.region}:${this.stack.account}:cluster:${this.clusterIdentifier}`],
     });
     const lambda = new NodejsFunction(this, `RdsClusterStopFunction-${name}-${environment}`, {
-      functionName: `${this.clusterIdentifier}-rds-cluster-stop-${environment}`,
+      functionName: `${this.clusterIdentifier}-rds-cluster-stop`,
       entry: "function/rds-cluster-stop.ts",
       environment: {
         IDENTIFIER: this.clusterIdentifier,
@@ -115,7 +115,7 @@ export class AuroraConstruct extends DatabaseCluster {
       retention: RetentionDays.FIVE_DAYS,
     });
     new Rule(this, `RdsClusterStopFunctionScheduler-${name}-${environment}`, {
-      ruleName: `${this.clusterIdentifier}-rds-cluster-stop-scheduler-${environment}`,
+      ruleName: `${this.clusterIdentifier}-rds-cluster-stop-scheduler`,
       schedule: Schedule.cron({
         minute: "0",
         hour: "22",

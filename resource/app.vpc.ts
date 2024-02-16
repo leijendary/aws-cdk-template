@@ -7,7 +7,7 @@ const { environment } = env;
 export class AppVpc extends PublicVpcConstruct {
   constructor(scope: Construct) {
     const config: PublicVpcConstructProps = {
-      vpcName: `app-${environment}`,
+      name: "app",
     };
 
     super(scope, `AppVpc-${environment}`, config);

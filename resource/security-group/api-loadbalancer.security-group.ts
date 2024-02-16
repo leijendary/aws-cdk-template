@@ -14,7 +14,7 @@ export class ApiLoadBalancerSecurityGroup extends PublicSecurityGroup {
     const { vpc } = props;
     const config: PublicSecurityGroupProps = {
       vpc,
-      securityGroupName: `api-loadbalancer-${environment}`,
+      name: "api-loadbalancer",
     };
 
     super(scope, `ApiLoadBalancerSecurityGroup-${environment}`, config);
