@@ -13,14 +13,12 @@ const environment = env.environment;
 export class ApiGatewaySecurityGroup extends GatewaySecurityGroup {
   constructor(scope: Construct, props: ApiGatewaySecurityGroupProps) {
     const { vpc, peer } = props;
-    const id = `ApiGatewaySecurityGroup-${environment}`;
-    const securityGroupName = `api-gateway-${environment}`;
     const config: GatewaySecurityGroupProps = {
       vpc,
-      securityGroupName,
       peer,
+      securityGroupName: `api-gateway-${environment}`,
     };
 
-    super(scope, id, config);
+    super(scope, `ApiGatewaySecurityGroup-${environment}`, config);
   }
 }

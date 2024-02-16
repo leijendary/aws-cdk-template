@@ -13,7 +13,6 @@ import {
   DatabaseCluster,
   DatabaseClusterEngine,
   DatabaseClusterProps,
-  IClusterInstance,
 } from "aws-cdk-lib/aws-rds";
 import { Secret } from "aws-cdk-lib/aws-secretsmanager";
 import { Construct } from "constructs";
@@ -30,14 +29,6 @@ const environment = env.environment;
 export class AuroraConstruct extends DatabaseCluster {
   constructor(scope: Construct, id: string, props: AuroraConstructProps) {
     const { vpc, name, securityGroup } = props;
-    const readers: IClusterInstance[] = [];
-
-    if (isProd) {
-      const reader = ClusterInstance.serverlessV2("reader");
-      readers.push(reader);
-    }
-
-    const credentials = createCredentials(scope, name);
     const config: DatabaseClusterProps = {
       clusterIdentifier: `${name}-${environment}`,
       engine: DatabaseClusterEngine.auroraPostgres({
@@ -45,9 +36,9 @@ export class AuroraConstruct extends DatabaseCluster {
       }),
       serverlessV2MaxCapacity: isProd ? 16 : 1,
       writer: ClusterInstance.serverlessV2("writer"),
-      readers,
+      readers: [],
       storageType: isProd ? DBClusterStorageType.AURORA_IOPT1 : DBClusterStorageType.AURORA,
-      credentials,
+      credentials: createCredentials(scope, name),
       backup: {
         retention: Duration.days(isProd ? 30 : 7),
       },
@@ -60,6 +51,10 @@ export class AuroraConstruct extends DatabaseCluster {
       securityGroups: [securityGroup],
       preferredMaintenanceWindow: "Tue:22:00-Tue:22:30",
     };
+
+    if (isProd) {
+      config.readers!!.push(ClusterInstance.serverlessV2("reader"));
+    }
 
     super(scope, id, config);
 
@@ -89,16 +84,13 @@ export class AuroraConstruct extends DatabaseCluster {
       removalPolicy: RemovalPolicy.DESTROY,
       retention: RetentionDays.FIVE_DAYS,
     });
-
-    const target = new LambdaFunction(lambda);
-
     new Rule(this, `RdsClusterStartFunctionScheduler-${name}-${environment}`, {
       ruleName: `${this.clusterIdentifier}-rds-cluster-start-scheduler-${environment}`,
       schedule: Schedule.cron({
         minute: "55",
         hour: "09",
       }),
-      targets: [target],
+      targets: [new LambdaFunction(lambda)],
     });
   }
 
@@ -122,16 +114,13 @@ export class AuroraConstruct extends DatabaseCluster {
       removalPolicy: RemovalPolicy.DESTROY,
       retention: RetentionDays.FIVE_DAYS,
     });
-
-    const target = new LambdaFunction(lambda);
-
     new Rule(this, `RdsClusterStopFunctionScheduler-${name}-${environment}`, {
       ruleName: `${this.clusterIdentifier}-rds-cluster-stop-scheduler-${environment}`,
       schedule: Schedule.cron({
         minute: "0",
         hour: "22",
       }),
-      targets: [target],
+      targets: [new LambdaFunction(lambda)],
     });
   }
 }

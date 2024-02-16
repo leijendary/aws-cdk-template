@@ -13,10 +13,9 @@ const { environment } = env;
 export class ApiFargateCluster extends FargateClusterConstruct {
   constructor(scope: Construct, props: ApiFargateClusterProps) {
     const { vpc } = props;
-    const clusterName = `api-${environment}`;
     const config: ClusterProps = {
-      clusterName,
       vpc,
+      clusterName: `api-${environment}`,
     };
 
     super(scope, `ApiFargateCluster-${environment}`, config);

@@ -14,14 +14,12 @@ const environment = env.environment;
 export class ApiAuroraSecurityGroup extends AuroraSecurityGroup {
   constructor(scope: Construct, props: ApiAuroraSecurityGroupProps) {
     const { vpc, peer } = props;
-    const id = `ApiAuroraSecurityGroup-${environment}`;
-    const securityGroupName = `api-aurora-${environment}`;
     const config: AuroraSecurityGroupProps = {
       vpc,
-      securityGroupName,
       peer,
+      securityGroupName: `api-aurora-${environment}`,
     };
 
-    super(scope, id, config);
+    super(scope, `ApiAuroraSecurityGroup-${environment}`, config);
   }
 }

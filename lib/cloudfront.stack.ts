@@ -41,12 +41,10 @@ export class CloudFrontStack extends Stack {
       hostedZone,
     });
 
-    const target = new CloudFrontTarget(this.albDistribution);
-
     new ARecord(this, `AlbDistributionAliasRecord-${environment}`, {
       zone: hostedZone,
       recordName: `api.${hostedZone.zoneName}`,
-      target: RecordTarget.fromAlias(target),
+      target: RecordTarget.fromAlias(new CloudFrontTarget(this.albDistribution)),
     });
   }
 
@@ -57,12 +55,10 @@ export class CloudFrontStack extends Stack {
       hostedZone,
     });
 
-    const target = new CloudFrontTarget(this.s3Distribution);
-
     new ARecord(this, `S3DistributionAliasRecord-${environment}`, {
       zone: hostedZone,
       recordName: `cdn.${hostedZone.zoneName}`,
-      target: RecordTarget.fromAlias(target),
+      target: RecordTarget.fromAlias(new CloudFrontTarget(this.s3Distribution)),
     });
   }
 }

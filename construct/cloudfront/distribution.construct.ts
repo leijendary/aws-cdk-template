@@ -35,22 +35,21 @@ const environment = env.environment;
 export class S3DistributionConstruct extends Distribution {
   constructor(scope: Construct, props: S3DistributionConstructProps) {
     const { bucket, certificate, hostedZone } = props;
-    const originAccessIdentity = new OriginAccessIdentity(scope, `OriginAccessIdentity-${environment}`);
-    const publicKey = new PublicKeyConstruct(scope);
-    const keyGroup = new KeyGroupConstruct(scope, {
-      publicKey,
-    });
     const config: DistributionProps = {
       certificate,
       domainNames: [`cdn.${hostedZone.zoneName}`],
       priceClass: PriceClass.PRICE_CLASS_100,
       defaultBehavior: {
         origin: new S3Origin(bucket, {
-          originAccessIdentity,
+          originAccessIdentity: new OriginAccessIdentity(scope, `OriginAccessIdentity-${environment}`),
         }),
         originRequestPolicy: OriginRequestPolicy.CORS_CUSTOM_ORIGIN,
         responseHeadersPolicy: ResponseHeadersPolicy.CORS_ALLOW_ALL_ORIGINS_WITH_PREFLIGHT_AND_SECURITY_HEADERS,
-        trustedKeyGroups: [keyGroup],
+        trustedKeyGroups: [
+          new KeyGroupConstruct(scope, {
+            publicKey: new PublicKeyConstruct(scope),
+          }),
+        ],
         viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       },
     };

@@ -99,7 +99,6 @@ export class PublicVpcConstruct extends Vpc {
       description: "Security Group for the Bastion Host",
       vpc: this,
     });
-    const policy = ManagedPolicy.fromAwsManagedPolicyName("AmazonSSMManagedInstanceCore");
     const config: InstanceProps = {
       instanceName: `${this.vpcName}-bastion-${environment}`,
       instanceType: InstanceType.of(InstanceClass.T4G, InstanceSize.NANO),
@@ -111,12 +110,10 @@ export class PublicVpcConstruct extends Vpc {
       securityGroup,
     };
     this.bastion = new Instance(this, `Bastion-${this.vpcName}-${environment}`, config);
-    this.bastion.role.addManagedPolicy(policy);
+    this.bastion.role.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName("AmazonSSMManagedInstanceCore"));
 
-    const instanceId = this.bastion.instanceId;
-
-    this.createStartSchedule(instanceId);
-    this.createStopSchedule(instanceId);
+    this.createStartSchedule(this.bastion.instanceId);
+    this.createStopSchedule(this.bastion.instanceId);
   }
 
   private createStartSchedule(instanceId: string) {
@@ -139,16 +136,13 @@ export class PublicVpcConstruct extends Vpc {
       removalPolicy: RemovalPolicy.DESTROY,
       retention: RetentionDays.FIVE_DAYS,
     });
-
-    const target = new LambdaFunction(lambda);
-
     new Rule(this, `Ec2InstanceStartFunctionScheduler-${this.vpcName}-${environment}`, {
       ruleName: `${this.vpcName}-ec2-instance-start-scheduler-${environment}`,
       schedule: Schedule.cron({
         minute: "0",
         hour: "10",
       }),
-      targets: [target],
+      targets: [new LambdaFunction(lambda)],
     });
   }
 
@@ -172,16 +166,13 @@ export class PublicVpcConstruct extends Vpc {
       removalPolicy: RemovalPolicy.DESTROY,
       retention: RetentionDays.FIVE_DAYS,
     });
-
-    const target = new LambdaFunction(lambda);
-
     new Rule(this, `Ec2InstanceStopFunctionScheduler-${this.vpcName}-${environment}`, {
       ruleName: `${this.vpcName}-ec2-instance-stop-scheduler-${environment}`,
       schedule: Schedule.cron({
         minute: "0",
         hour: "22",
       }),
-      targets: [target],
+      targets: [new LambdaFunction(lambda)],
     });
   }
 }

@@ -9,12 +9,10 @@ const environment = env.environment;
 
 export class PublicKeyConstruct extends PublicKey {
   constructor(scope: Construct) {
-    const keyPath = join(__dirname, `../../security/distribution-key.${environment}.pem`);
-    const encodedKey = readFileSync(keyPath, {
-      encoding: "utf-8",
-    });
     const config: PublicKeyProps = {
-      encodedKey,
+      encodedKey: readFileSync(join(__dirname, `../../security/distribution-key.${environment}.pem`), {
+        encoding: "utf-8",
+      }),
     };
 
     super(scope, `PublicKey-${environment}`, config);

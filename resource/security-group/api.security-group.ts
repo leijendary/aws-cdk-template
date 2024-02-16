@@ -13,14 +13,12 @@ const environment = env.environment;
 export class ApiSecurityGroup extends PeerSecurityGroup {
   constructor(scope: Construct, props: ApiSecurityGroupProps) {
     const { vpc, peer } = props;
-    const id = `ApiSecurityGroup-${environment}`;
-    const securityGroupName = `api-${environment}`;
     const config: PeerSecurityGroupProps = {
       vpc,
-      securityGroupName,
       peer,
+      securityGroupName: `api-${environment}`,
     };
 
-    super(scope, id, config);
+    super(scope, `ApiSecurityGroup-${environment}`, config);
   }
 }
