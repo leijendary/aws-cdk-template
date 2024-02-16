@@ -30,7 +30,7 @@ const environment = env.environment;
 export class AuroraConstruct extends DatabaseCluster {
   constructor(scope: Construct, id: string, props: AuroraConstructProps) {
     const { vpc, name, securityGroup } = props;
-    let readers: IClusterInstance[] = [];
+    const readers: IClusterInstance[] = [];
 
     if (isProd) {
       const reader = ClusterInstance.serverlessV2("reader");
