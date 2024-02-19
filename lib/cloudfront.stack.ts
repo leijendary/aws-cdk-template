@@ -53,6 +53,9 @@ export class CloudFrontStack extends Stack {
       bucket,
       certificate,
       hostedZone,
+      behaviors: {
+        public: ["/public/*"],
+      },
     });
 
     new ARecord(this, `S3DistributionAliasRecord-${environment}`, {

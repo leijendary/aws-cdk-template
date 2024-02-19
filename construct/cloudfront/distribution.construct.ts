@@ -1,6 +1,7 @@
 import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
 import {
   AllowedMethods,
+  BehaviorOptions,
   Distribution,
   DistributionProps,
   OriginAccessIdentity,
@@ -22,6 +23,10 @@ type S3DistributionConstructProps = {
   bucket: Bucket;
   certificate: Certificate;
   hostedZone: HostedZone;
+  behaviors?: {
+    public?: string[];
+    private?: string[];
+  };
 };
 
 type AlbDistributionConstructProps = {
@@ -34,24 +39,34 @@ const environment = env.environment;
 
 export class S3DistributionConstruct extends Distribution {
   constructor(scope: Construct, props: S3DistributionConstructProps) {
-    const { bucket, certificate, hostedZone } = props;
+    const { bucket, certificate, hostedZone, behaviors } = props;
+    const origin = new S3Origin(bucket, {
+      originAccessIdentity: new OriginAccessIdentity(scope, `OriginAccessIdentity-${environment}`),
+    });
+    const publicBehavior: BehaviorOptions = {
+      origin,
+    };
+    const privateBehavior: BehaviorOptions = {
+      origin,
+      originRequestPolicy: OriginRequestPolicy.CORS_CUSTOM_ORIGIN,
+      responseHeadersPolicy: ResponseHeadersPolicy.CORS_ALLOW_ALL_ORIGINS_WITH_PREFLIGHT_AND_SECURITY_HEADERS,
+      viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+      trustedKeyGroups: [
+        new KeyGroupConstruct(scope, {
+          publicKey: new PublicKeyConstruct(scope),
+        }),
+      ],
+    };
+    const additionalBehaviors: Record<string, BehaviorOptions> = {};
+    behaviors?.public?.forEach((path) => (additionalBehaviors[path] = publicBehavior));
+    behaviors?.private?.forEach((path) => (additionalBehaviors[path] = privateBehavior));
+
     const config: DistributionProps = {
       certificate,
       domainNames: [`cdn.${hostedZone.zoneName}`],
       priceClass: PriceClass.PRICE_CLASS_100,
-      defaultBehavior: {
-        origin: new S3Origin(bucket, {
-          originAccessIdentity: new OriginAccessIdentity(scope, `OriginAccessIdentity-${environment}`),
-        }),
-        originRequestPolicy: OriginRequestPolicy.CORS_CUSTOM_ORIGIN,
-        responseHeadersPolicy: ResponseHeadersPolicy.CORS_ALLOW_ALL_ORIGINS_WITH_PREFLIGHT_AND_SECURITY_HEADERS,
-        trustedKeyGroups: [
-          new KeyGroupConstruct(scope, {
-            publicKey: new PublicKeyConstruct(scope),
-          }),
-        ],
-        viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-      },
+      defaultBehavior: privateBehavior,
+      additionalBehaviors,
     };
 
     super(scope, `S3Distribution-${environment}`, config);
