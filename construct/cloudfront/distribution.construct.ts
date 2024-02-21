@@ -45,11 +45,11 @@ export class S3DistributionConstruct extends Distribution {
     });
     const publicBehavior: BehaviorOptions = {
       origin,
-    };
-    const privateBehavior: BehaviorOptions = {
-      origin,
       originRequestPolicy: OriginRequestPolicy.CORS_CUSTOM_ORIGIN,
       responseHeadersPolicy: ResponseHeadersPolicy.CORS_ALLOW_ALL_ORIGINS_WITH_PREFLIGHT_AND_SECURITY_HEADERS,
+    };
+    const privateBehavior: BehaviorOptions = {
+      ...publicBehavior,
       viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       trustedKeyGroups: [
         new KeyGroupConstruct(scope, {
