@@ -1,3 +1,4 @@
+import { Duration } from "aws-cdk-lib";
 import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
 import { SecurityGroup, Vpc } from "aws-cdk-lib/aws-ec2";
 import {
@@ -28,6 +29,7 @@ export class ApiLoadBalancer extends ApplicationLoadBalancer {
       vpc,
       securityGroup,
       loadBalancerName: `api-loadbalancer${suffix}`,
+      idleTimeout: Duration.minutes(5),
     };
 
     super(scope, `ApiLoadBalancer-${environment}`, config);
