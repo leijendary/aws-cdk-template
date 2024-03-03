@@ -40,7 +40,8 @@ export class AuroraConstruct extends DatabaseCluster {
       storageType: isProd ? DBClusterStorageType.AURORA_IOPT1 : DBClusterStorageType.AURORA,
       credentials: createCredentials(scope, name),
       backup: {
-        retention: Duration.days(isProd ? 30 : 7),
+        retention: Duration.days(isProd ? 30 : 1),
+        preferredWindow: "21:30-22:00",
       },
       storageEncrypted: true,
       removalPolicy: isProd ? RemovalPolicy.RETAIN : RemovalPolicy.DESTROY,
