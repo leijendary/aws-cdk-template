@@ -115,7 +115,7 @@ Below are the most commonly used secrets.
 
 Credentials for the AWS RDS Aurora database.
 
-Name: `$ENV/aurora/$NAME`. Where `$NAME` is the name of the user of the database cluster.
+Name: `$ENV/aurora/$NAME`. Where `$NAME` is the name of the database cluster without the  `$ENV` suffix.
 
 ```json
 {
