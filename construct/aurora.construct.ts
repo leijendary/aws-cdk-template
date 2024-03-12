@@ -32,12 +32,12 @@ export class AuroraConstruct extends DatabaseCluster {
     const config: DatabaseClusterProps = {
       clusterIdentifier: `${name}-${environment}`,
       engine: DatabaseClusterEngine.auroraPostgres({
-        version: AuroraPostgresEngineVersion.VER_15_5,
+        version: AuroraPostgresEngineVersion.VER_16_1,
       }),
-      serverlessV2MaxCapacity: isProd ? 16 : 1,
+      serverlessV2MaxCapacity: isProd ? 4 : 1,
       writer: ClusterInstance.serverlessV2("writer"),
       readers: [],
-      storageType: isProd ? DBClusterStorageType.AURORA_IOPT1 : DBClusterStorageType.AURORA,
+      storageType: DBClusterStorageType.AURORA,
       credentials: createCredentials(scope, name),
       backup: {
         retention: Duration.days(isProd ? 30 : 1),
