@@ -10,6 +10,7 @@ import { CloudFrontStack } from "../lib/cloudfront.stack";
 import { DatabaseStack } from "../lib/database.stack";
 import { NetworkStack } from "../lib/network.stack";
 import { OrganizationStack } from "../lib/organization.stack";
+import { RepositoryStack } from "../lib/repository.stack";
 
 const { account, region } = env;
 const app = new App();
@@ -40,6 +41,9 @@ const { certificate: regionalCertificate } = new CertificateStack(app, {
     region: "us-east-1",
   },
 });
+
+// Docker repository
+new RepositoryStack(app, props);
 
 // Bucket
 const { bucket } = new BucketStack(app, props);
