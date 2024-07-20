@@ -1,5 +1,5 @@
-import { RemovalPolicy } from "aws-cdk-lib";
-import { BlockPublicAccess, Bucket, BucketProps, HttpMethods } from "aws-cdk-lib/aws-s3";
+import { Duration, RemovalPolicy } from "aws-cdk-lib";
+import { BlockPublicAccess, Bucket, BucketProps, HttpMethods, LifecycleRule } from "aws-cdk-lib/aws-s3";
 import { Construct } from "constructs";
 import env, { isProd } from "../env";
 
@@ -30,5 +30,27 @@ export class ApiBucket extends Bucket {
     };
 
     super(scope, `ApiBucket-${environment}`, config);
+
+    this.addNonCurrentLifecycleRule();
+    this.addIncompleteLifecycleRule();
+  }
+
+  private addNonCurrentLifecycleRule() {
+    const rule: LifecycleRule = {
+      id: "Delete non-current objects after 7 days",
+      noncurrentVersionExpiration: Duration.days(7),
+    };
+
+    this.addLifecycleRule(rule);
+  }
+
+  private addIncompleteLifecycleRule() {
+    const rule: LifecycleRule = {
+      id: "Delete incomplete multipart uploads after 7 days",
+      abortIncompleteMultipartUploadAfter: Duration.days(7),
+      expiredObjectDeleteMarker: true,
+    };
+
+    this.addLifecycleRule(rule);
   }
 }
