@@ -33,6 +33,8 @@ jobs:
           ENVIRONMENT: ${{ inputs.environment }}
           ORGANIZATION: ${{ vars.ORGANIZATION }}
           SUBSCRIBER: ${{ vars.SUBSCRIBER }}
+          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+          SLACK_CHANNEL: ${{ vars.SLACK_CHANNEL }}
         run: |
           npm ci
           npm run build

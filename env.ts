@@ -45,4 +45,8 @@ export default {
   organization,
   config: environmentConfig[environment],
   subscriber,
+  slack: {
+    token: process.env.SLACK_TOKEN!!,
+    channel: process.env.SLACK_CHANNEL!!,
+  },
 };

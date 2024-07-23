@@ -2,6 +2,7 @@ import { App, StackProps } from "aws-cdk-lib";
 import "dotenv/config";
 import "source-map-support/register";
 import env from "../env";
+import { AlarmStack } from "../lib/alarm.stack";
 import { ApiStack } from "../lib/api.stack";
 import { BillingStack } from "../lib/billing.stack";
 import { BucketStack } from "../lib/bucket.stack";
@@ -44,6 +45,9 @@ const { certificate: regionalCertificate } = new CertificateStack(app, {
 
 // Docker repository
 new RepositoryStack(app, props);
+
+// Alarm
+new AlarmStack(app, props);
 
 // Bucket
 const { bucket } = new BucketStack(app, props);
