@@ -23,6 +23,6 @@ export const handler: Handler = async (event) => {
 
   fetch("https://slack.com/api/chat.postMessage", options)
     .then((response) => response.text())
-    .then((result) => console.log(result))
-    .catch((error) => console.error(error));
+    .then(console.log)
+    .catch(console.error);
 };
