@@ -5,10 +5,10 @@ export const handler: Handler = async (event) => {
 
   const alarmName = event["alarmData"]["alarmName"];
   const state = event["alarmData"]["state"];
-  const reason = state["reason"];
   const reasonData = JSON.parse(state["reasonData"]);
-  const startDate = reasonData["startDate"];
-  const timestamp = state["timestamp"];
+  const count = parseInt(reasonData["recentDatapoints"][0]);
+  const startDate = formatToDate(reasonData["startDate"]);
+  const timestamp = formatToDate(state["timestamp"]);
   const options = {
     method: "POST",
     headers: {
@@ -16,8 +16,8 @@ export const handler: Handler = async (event) => {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      channel: process.env.SLACK_CHANNEL!!,
-      text: `*Alarm*: ${alarmName}.\n*Reason*: ${reason}\n*Timestamp*: Between ${startDate} and ${timestamp}.`,
+      channel: process.env.SLACK_CHANNEL_ID!!,
+      text: `There were ${count} error(s) from *${alarmName}* between *${startDate}* and *${timestamp}*`,
     }),
   };
 
@@ -30,3 +30,11 @@ export const handler: Handler = async (event) => {
     console.error(error);
   }
 };
+
+function formatToDate(value: string): string {
+  const date = new Date(value);
+  const iso = date.toISOString();
+  const formatted = iso.replace("T", " ").substring(0, iso.lastIndexOf("."));
+
+  return `${formatted} GMT`;
+}
