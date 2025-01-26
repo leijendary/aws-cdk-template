@@ -14,14 +14,21 @@ export class RepositoryConstruct extends Repository {
       removalPolicy: RemovalPolicy.DESTROY,
       lifecycleRules: [
         {
-          description: "Remove untagged image older than 1 day",
+          description: "Remove untagged images older than 1 day",
           rulePriority: 1,
           tagStatus: TagStatus.UNTAGGED,
           maxImageAge: Duration.days(1),
         },
         {
-          description: "Keep only up to 10 images",
+          description: "Keep only up to 10 versioned images",
           rulePriority: 2,
+          tagStatus: TagStatus.TAGGED,
+          tagPatternList: ["*.*.*"],
+          maxImageCount: 10,
+        },
+        {
+          description: "Keep only up to 10 unversioned images",
+          rulePriority: 3,
           tagStatus: TagStatus.ANY,
           maxImageCount: 10,
         },
