@@ -1,11 +1,18 @@
-import { EnvironmentConfig } from "./types/environment";
+import { EnvironmentConfig, EnvironmentKey, environments } from "@/types/environment";
 
-const environment = process.env.ENVIRONMENT;
+const account = process.env.CDK_DEFAULT_ACCOUNT!!;
+const region = process.env.CDK_DEFAULT_REGION!!;
+const environment = process.env.ENVIRONMENT as EnvironmentKey;
 const organization = process.env.ORGANIZATION;
 const subscriber = process.env.SUBSCRIBER;
+const sharedAccountEmail = process.env.SHARED_ACCOUNT_EMAIL;
 
 if (!environment) {
   throw new Error("Environment is not set. Make sure the environment variable 'ENVIRONMENT' is set.");
+}
+
+if (!environments.includes(environment)) {
+  throw new Error(`Environment has an invalid value of ${environment}. Valid values are ${environments}.`);
 }
 
 if (!organization) {
@@ -16,8 +23,13 @@ if (!subscriber) {
   throw new Error("Subscriber is not set. Make sure the environment variable 'SUBSCRIBER' is set.");
 }
 
+if (!sharedAccountEmail) {
+  throw new Error("Shared account email is not set. Make sure the environment variable 'SHARED_ACCOUNT_EMAIL' is set.");
+}
+
 const domainName = `${organization}.com`;
-const environmentConfig: EnvironmentConfig = {
+
+export const config: EnvironmentConfig = {
   dev: {
     domainName: `${environment}.${domainName}`,
     cidrBlock: "10.0.0.0/16",
@@ -26,7 +38,7 @@ const environmentConfig: EnvironmentConfig = {
     domainName: `${environment}.${domainName}`,
     cidrBlock: "10.1.0.0/16",
   },
-  staging: {
+  sandbox: {
     domainName: `${environment}.${domainName}`,
     cidrBlock: "10.2.0.0/16",
   },
@@ -39,12 +51,13 @@ const environmentConfig: EnvironmentConfig = {
 export const isProd = environment === "prod";
 
 export default {
-  account: process.env.CDK_DEFAULT_ACCOUNT!!,
-  region: process.env.CDK_DEFAULT_REGION!!,
+  account,
+  region,
   environment,
   organization,
-  config: environmentConfig[environment],
+  config: config[environment],
   subscriber,
+  sharedAccountEmail,
   slack: {
     token: process.env.SLACK_TOKEN!!,
     channel: process.env.SLACK_CHANNEL!!,

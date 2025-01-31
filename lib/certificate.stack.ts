@@ -1,8 +1,8 @@
+import env from "@/env";
 import { Stack, StackProps } from "aws-cdk-lib";
 import { Certificate, CertificateValidation } from "aws-cdk-lib/aws-certificatemanager";
 import { HostedZone } from "aws-cdk-lib/aws-route53";
 import { Construct } from "constructs";
-import env from "../env";
 
 type CertificateStackProps = StackProps & {
   hostedZone: HostedZone;

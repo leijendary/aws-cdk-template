@@ -1,3 +1,5 @@
+import { AlbDistributionConstruct, S3DistributionConstruct } from "@/construct/cloudfront/distribution.construct";
+import env from "@/env";
 import { Stack, StackProps } from "aws-cdk-lib";
 import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
 import { ApplicationLoadBalancer } from "aws-cdk-lib/aws-elasticloadbalancingv2";
@@ -5,8 +7,6 @@ import { ARecord, HostedZone, RecordTarget } from "aws-cdk-lib/aws-route53";
 import { CloudFrontTarget } from "aws-cdk-lib/aws-route53-targets";
 import { Bucket } from "aws-cdk-lib/aws-s3";
 import { Construct } from "constructs";
-import { AlbDistributionConstruct, S3DistributionConstruct } from "../construct/cloudfront/distribution.construct";
-import env from "../env";
 
 type CloudFrontStackProps = StackProps & {
   bucket: Bucket;

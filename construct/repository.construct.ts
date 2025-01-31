@@ -20,17 +20,17 @@ export class RepositoryConstruct extends Repository {
           maxImageAge: Duration.days(1),
         },
         {
-          description: "Keep only up to 10 versioned images",
+          description: "Keep only up to 20 versioned images",
           rulePriority: 2,
           tagStatus: TagStatus.TAGGED,
           tagPatternList: ["*.*.*"],
-          maxImageCount: 10,
+          maxImageCount: 20,
         },
         {
-          description: "Keep only up to 10 unversioned images",
+          description: "Removed unversioned images older than 15 days",
           rulePriority: 3,
           tagStatus: TagStatus.ANY,
-          maxImageCount: 10,
+          maxImageAge: Duration.days(15),
         },
       ],
     };

@@ -1,5 +1,9 @@
+export const environments = <const>["dev", "test", "sandbox", "prod"];
+
+export type EnvironmentKey = (typeof environments)[number];
+
 export type EnvironmentConfig = {
-  [key: string]: EnvironmentProps;
+  [key in EnvironmentKey]: EnvironmentProps;
 };
 
 export type EnvironmentProps = {

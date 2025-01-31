@@ -1,33 +1,36 @@
+name: Push on tags
+
 on:
   push:
     tags:
       - "*"
 
 jobs:
-  # Staging environment
-  test-staging:
-    name: Test staging
+  # Sandbox environment
+  test-sandbox:
+    name: Test sandbox
     uses: ./.github/workflows/test.yaml
     with:
-      environment: staging
+      environment: sandbox
     secrets: inherit
-  deploy-staging:
-    needs: build-staging
-    name: Deploy staging
+  deploy-sandbox:
+    needs: test-sandbox
+    name: Deploy sandbox
     uses: ./.github/workflows/deploy.yaml
     with:
-      environment: staging
+      environment: sandbox
     secrets: inherit
 
   # Production environment
   test-prod:
+    needs: deploy-sandbox
     name: Test production
     uses: ./.github/workflows/test.yaml
     with:
       environment: prod
     secrets: inherit
   deploy-prod:
-    needs: build-prod
+    needs: test-prod
     name: Deploy production
     uses: ./.github/workflows/deploy.yaml
     with:

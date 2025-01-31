@@ -10,14 +10,17 @@ Copy `.env.example` to `.env` and fill up the following details:
 1. `ENVIRONMENT`: The environment where to deploy the stacks.
 2. `ORGANIZATION`: This is mostly used as the domain name.
 3. `SUBSCRIBER`: The email for billing alerts.
+4. `SHARED_ACCOUNT_EMAIL`: The email to be used when creating the `Shared Repository` account.
+5. `SLACK_TOKEN`: The slack auth token used by the alerts to send a message.
+6. `SLACK_CHANNEL`: The slack channel where the alerts should send the message to. This should be the channel identifier.
 
 ## IAM Role:
 
 When creating an IAM role that has access to the CDK for deploying (like GitHub actions), create the following role:
 
-Name: `DeploymentRole-$ENV`.
+Name: `DeploymentRole-$ENVIRONMENT`.
 
-1. To access ECR repositories, use attach the `AmazonEC2ContainerRegistryPowerUser` permission.
+1. To access ECR repositories, attach the `AmazonEC2ContainerRegistryPowerUser` permission.
 2. Add the following inline policy and name it `AssumeRoleCDK`:
 
 ### Policy:
@@ -66,23 +69,37 @@ You have to [configure a role for GitHub OIDC identity provider](https://docs.aw
 
 Execute the following commands locally first before committing to git:
 
-`cdk --profile $YOUR_PROFILE_NAME synth --all`
-`cdk --profile $YOUR_PROFILE_NAME bootstrap --all`
+```shell
+cdk --profile $AWS_PROFILE_NAME synth --all
+cdk --profile $AWS_PROFILE_NAME bootstrap --all
+```
 
 Then execute the actual deployment:
 
-`cdk --profile $YOUR_PROFILE_NAME deploy --all (or specific like Network-$ENV)`
+`cdk --profile $AWS_PROFILE_NAME deploy --all (or specific like Network-$ENVIRONMENT)`
 
-Where `$ENV` can be any of the following:
+Where `$ENVIRONMENT` can be any of the following:
 
 1. `dev`
 2. `test`
-3. `staging`
+3. `sandbox`
 4. `prod`
 
 Example:
 
 `cdk --profile leijendary-dev deploy --all`
+
+### Global Stacks
+
+There are global stacks that should be deployed via local execution with a main (preferrably non-root) account first:
+
+1. `BillingStack`
+2. `OrganizationStack`
+3. `RepositoryStack`
+
+Example:
+
+`cdk --profile leijendary-main deploy BillingStack`
 
 ## CloudFront Public Keys
 
@@ -100,7 +117,7 @@ _**TL;DR:**_
 
 1. Generate Private Key: `openssl genrsa -out private_key.pem 2048`
 2. Generate Public Key: `openssl rsa -pubout -in private_key.pem -out public_key.pem`
-3. Copy the contents of `private_key.pem` to the `$ENV/security` :: `cloudFront.privateKey` secret.
+3. Copy the contents of `private_key.pem` to the `$ENVIRONMENT/security` :: `cloudFront.privateKey` secret.
 4. Copy `public_key.pem` to the `security` folder with the format: `distribution-key.${environment}.pem`
 
 ## Secrets:
@@ -115,7 +132,7 @@ Below are the most commonly used secrets.
 
 Credentials for the AWS RDS Aurora database.
 
-Name: `$ENV/aurora/$NAME`. Where `$NAME` is the name of the database cluster without the `$ENV` suffix.
+Name: `$ENVIRONMENT/aurora/$NAME`. Where `$NAME` is the name of the database cluster without the `$ENVIRONMENT` suffix.
 
 ```json
 {
@@ -128,7 +145,7 @@ Name: `$ENV/aurora/$NAME`. Where `$NAME` is the name of the database cluster wit
 
 Credentials for non-AWS created data storage.
 
-Name: `$ENV/data-storage`.
+Name: `$ENVIRONMENT/data-storage`.
 
 ```json
 {
@@ -150,7 +167,7 @@ Name: `$ENV/data-storage`.
 
 Credentials for third party integrations.
 
-Name: `$ENV/integration`.
+Name: `$ENVIRONMENT/integration`.
 
 ```json
 {
@@ -169,7 +186,7 @@ Name: `$ENV/integration`.
 
 Security related credentials like crypto, encryption, etc.
 
-Name: `$ENV/security`.
+Name: `$ENVIRONMENT/security`.
 
 ```json
 {

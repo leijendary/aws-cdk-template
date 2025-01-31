@@ -1,6 +1,6 @@
+import env from "@/env";
 import { KeyGroup, KeyGroupProps, PublicKey } from "aws-cdk-lib/aws-cloudfront";
 import { Construct } from "constructs";
-import env from "../../env";
 
 type KeyGroupConstructProps = {
   publicKey: PublicKey;

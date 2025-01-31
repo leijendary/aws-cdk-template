@@ -1,3 +1,4 @@
+import env, { isProd } from "@/env";
 import { Duration } from "aws-cdk-lib";
 import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
 import { SecurityGroup, Vpc } from "aws-cdk-lib/aws-ec2";
@@ -9,7 +10,6 @@ import {
   ListenerAction,
 } from "aws-cdk-lib/aws-elasticloadbalancingv2";
 import { Construct } from "constructs";
-import env, { isProd } from "../env";
 
 type ApiLoadBalancerProps = {
   vpc: Vpc;

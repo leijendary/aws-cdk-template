@@ -1,3 +1,4 @@
+import env, { isProd } from "@/env";
 import { Duration, RemovalPolicy } from "aws-cdk-lib";
 import { SecurityGroup, SubnetType, Vpc } from "aws-cdk-lib/aws-ec2";
 import { Rule, Schedule } from "aws-cdk-lib/aws-events";
@@ -16,7 +17,6 @@ import {
 } from "aws-cdk-lib/aws-rds";
 import { Secret } from "aws-cdk-lib/aws-secretsmanager";
 import { Construct } from "constructs";
-import env, { isProd } from "../env";
 
 export type AuroraConstructProps = {
   vpc: Vpc;

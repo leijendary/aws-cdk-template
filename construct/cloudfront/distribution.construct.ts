@@ -1,3 +1,6 @@
+import { KeyGroupConstruct } from "@/construct/cloudfront/key-group.construct";
+import { PublicKeyConstruct } from "@/construct/cloudfront/public-key.construct";
+import env from "@/env";
 import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
 import {
   AllowedMethods,
@@ -10,14 +13,11 @@ import {
   ResponseHeadersPolicy,
   ViewerProtocolPolicy,
 } from "aws-cdk-lib/aws-cloudfront";
-import { LoadBalancerV2Origin, S3Origin } from "aws-cdk-lib/aws-cloudfront-origins";
+import { LoadBalancerV2Origin, S3BucketOrigin } from "aws-cdk-lib/aws-cloudfront-origins";
 import { ApplicationLoadBalancer } from "aws-cdk-lib/aws-elasticloadbalancingv2";
 import { HostedZone } from "aws-cdk-lib/aws-route53";
 import { Bucket } from "aws-cdk-lib/aws-s3";
 import { Construct } from "constructs";
-import env from "../../env";
-import { KeyGroupConstruct } from "./key-group.construct";
-import { PublicKeyConstruct } from "./public-key.construct";
 
 type S3DistributionConstructProps = {
   bucket: Bucket;
@@ -40,7 +40,7 @@ const environment = env.environment;
 export class S3DistributionConstruct extends Distribution {
   constructor(scope: Construct, props: S3DistributionConstructProps) {
     const { bucket, certificate, hostedZone, behaviors } = props;
-    const origin = new S3Origin(bucket, {
+    const origin = S3BucketOrigin.withOriginAccessIdentity(bucket, {
       originAccessIdentity: new OriginAccessIdentity(scope, `OriginAccessIdentity-${environment}`),
     });
     const publicBehavior: BehaviorOptions = {

@@ -1,8 +1,8 @@
+import env from "@/env";
 import { Stack } from "aws-cdk-lib";
 import { CfnBudget } from "aws-cdk-lib/aws-budgets";
 import { CfnAnomalyMonitor, CfnAnomalySubscription } from "aws-cdk-lib/aws-ce";
 import { Construct } from "constructs";
-import env from "../env";
 
 const { subscriber } = env;
 

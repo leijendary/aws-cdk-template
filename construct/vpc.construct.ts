@@ -1,3 +1,4 @@
+import env, { isProd } from "@/env";
 import { RemovalPolicy } from "aws-cdk-lib";
 import {
   AmazonLinuxCpuType,
@@ -25,7 +26,6 @@ import { Effect, ManagedPolicy, PolicyStatement } from "aws-cdk-lib/aws-iam";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
 import { Construct } from "constructs";
-import env, { isProd } from "../env";
 
 const { environment, config } = env;
 const { cidrBlock } = config;

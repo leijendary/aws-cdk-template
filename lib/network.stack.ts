@@ -1,10 +1,10 @@
+import { PublicVpcConstruct } from "@/construct/vpc.construct";
+import env from "@/env";
+import { AppVpc } from "@/resource/app.vpc";
 import { Stack, StackProps } from "aws-cdk-lib";
 import { Certificate, CertificateValidation } from "aws-cdk-lib/aws-certificatemanager";
 import { HostedZone } from "aws-cdk-lib/aws-route53";
 import { Construct } from "constructs";
-import { PublicVpcConstruct } from "../construct/vpc.construct";
-import env from "../env";
-import { AppVpc } from "../resource/app.vpc";
 
 type NetworkStackProps = StackProps;
 

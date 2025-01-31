@@ -1,7 +1,7 @@
+import { FargateCluster, FargateClusterProps } from "@/construct/ecs.construct";
+import env from "@/env";
 import { Vpc } from "aws-cdk-lib/aws-ec2";
 import { Construct } from "constructs";
-import env from "../env";
-import { FargateCluster, FargateClusterProps } from "./../construct/ecs.construct";
 
 type ApiFargateClusterProps = {
   vpc: Vpc;

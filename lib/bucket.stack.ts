@@ -1,8 +1,8 @@
+import env from "@/env";
+import { ApiBucket } from "@/resource/api.bucket";
 import { Stack, StackProps } from "aws-cdk-lib";
 import { Bucket } from "aws-cdk-lib/aws-s3";
 import { Construct } from "constructs";
-import env from "../env";
-import { ApiBucket } from "../resource/api.bucket";
 
 type BucketStackProps = StackProps;
 

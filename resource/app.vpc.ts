@@ -1,6 +1,6 @@
+import { PublicVpcConstruct, PublicVpcConstructProps } from "@/construct/vpc.construct";
+import env from "@/env";
 import { Construct } from "constructs";
-import env from "../env";
-import { PublicVpcConstruct, PublicVpcConstructProps } from "./../construct/vpc.construct";
 
 const { environment } = env;
 

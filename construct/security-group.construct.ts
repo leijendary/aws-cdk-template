@@ -1,29 +1,29 @@
+import env from "@/env";
+import { PublicVpcConstruct } from "@/construct/vpc.construct";
 import { ISecurityGroup, Peer, Port, SecurityGroup, SecurityGroupProps, Vpc } from "aws-cdk-lib/aws-ec2";
 import { Construct } from "constructs";
-import env from "../env";
-import { PublicVpcConstruct } from "./vpc.construct";
 
 export type PublicSecurityGroupProps = {
   vpc: Vpc;
-  name: string
+  name: string;
 };
 
 export type GatewaySecurityGroupProps = {
   vpc: Vpc;
   peer: SecurityGroup;
-  name: string
+  name: string;
 };
 
 export type PeerSecurityGroupProps = {
   vpc: Vpc;
   peer: SecurityGroup;
-  name: string
+  name: string;
 };
 
 export type AuroraSecurityGroupProps = {
   vpc: PublicVpcConstruct;
   peer: SecurityGroup;
-  name: string
+  name: string;
 };
 
 const defaults: Partial<SecurityGroupProps> = {
@@ -38,7 +38,7 @@ export class PublicSecurityGroup extends SecurityGroup {
     const { vpc, name } = props;
     const config: SecurityGroupProps = {
       vpc,
-      securityGroupName: `${name}-${environment}`
+      securityGroupName: `${name}-${environment}`,
       ...defaults,
     };
 
@@ -106,7 +106,7 @@ export class AuroraSecurityGroup extends SecurityGroup {
     const { vpc, peer, name } = props;
     const config: SecurityGroupProps = {
       vpc,
-      securityGroupName: `${name}-${environment}`
+      securityGroupName: `${name}-${environment}`,
     };
 
     super(scope, id, config);

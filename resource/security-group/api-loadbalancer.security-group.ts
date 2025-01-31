@@ -1,7 +1,7 @@
+import { PublicSecurityGroup, PublicSecurityGroupProps } from "@/construct/security-group.construct";
+import env from "@/env";
 import { Vpc } from "aws-cdk-lib/aws-ec2";
 import { Construct } from "constructs";
-import { PublicSecurityGroup, PublicSecurityGroupProps } from "../../construct/security-group.construct";
-import env from "../../env";
 
 type ApiAlbSecurityGroupProps = {
   vpc: Vpc;

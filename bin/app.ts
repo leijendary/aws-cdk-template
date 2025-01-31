@@ -1,19 +1,19 @@
+import env from "@/env";
+import { AlarmStack } from "@/lib/alarm.stack";
+import { ApiStack } from "@/lib/api.stack";
+import { BillingStack } from "@/lib/billing.stack";
+import { BucketStack } from "@/lib/bucket.stack";
+import { CertificateStack } from "@/lib/certificate.stack";
+import { CloudFrontStack } from "@/lib/cloudfront.stack";
+import { DatabaseStack } from "@/lib/database.stack";
+import { NetworkStack } from "@/lib/network.stack";
+import { OrganizationStack } from "@/lib/organization.stack";
+import { RepositoryStack } from "@/lib/repository.stack";
 import { App, StackProps } from "aws-cdk-lib";
 import "dotenv/config";
 import "source-map-support/register";
-import env from "../env";
-import { AlarmStack } from "../lib/alarm.stack";
-import { ApiStack } from "../lib/api.stack";
-import { BillingStack } from "../lib/billing.stack";
-import { BucketStack } from "../lib/bucket.stack";
-import { CertificateStack } from "../lib/certificate.stack";
-import { CloudFrontStack } from "../lib/cloudfront.stack";
-import { DatabaseStack } from "../lib/database.stack";
-import { NetworkStack } from "../lib/network.stack";
-import { OrganizationStack } from "../lib/organization.stack";
-import { RepositoryStack } from "../lib/repository.stack";
 
-const { account, region } = env;
+const { account, region, environment } = env;
 const app = new App();
 const props: StackProps = {
   env: {
@@ -22,12 +22,19 @@ const props: StackProps = {
   },
   crossRegionReferences: true,
 };
+const deploymentRole = `arn:aws:iam::${account}:role/DeploymentRole-${environment}`;
 
 // Billing and Cost
 new BillingStack(app);
 
 // Organizations
-new OrganizationStack(app);
+const { units } = new OrganizationStack(app);
+
+// Docker repositories
+new RepositoryStack(app, {
+  organizationalUnit: units.infrastructure,
+  deploymentRole,
+});
 
 // Network
 const { vpc, hostedZone, certificate: domainCertificate } = new NetworkStack(app, props);
@@ -42,9 +49,6 @@ const { certificate: regionalCertificate } = new CertificateStack(app, {
     region: "us-east-1",
   },
 });
-
-// Docker repository
-new RepositoryStack(app, props);
 
 // Alarm
 new AlarmStack(app, props);

@@ -2,7 +2,7 @@ import { Vpc } from "aws-cdk-lib/aws-ec2";
 import { Cluster, ClusterProps } from "aws-cdk-lib/aws-ecs";
 import { NamespaceType } from "aws-cdk-lib/aws-servicediscovery";
 import { Construct } from "constructs";
-import env from "../env";
+import env from "@/env";
 
 export type FargateClusterProps = {
   vpc: Vpc;

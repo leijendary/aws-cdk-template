@@ -1,8 +1,8 @@
+import env from "@/env";
 import { RemovalPolicy, Stack, StackProps } from "aws-cdk-lib";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
 import { Construct } from "constructs";
-import env from "../env";
 
 type AlarmStackProps = StackProps;
 

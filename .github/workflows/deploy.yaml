@@ -1,4 +1,17 @@
+name: Deploy
+
 on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Environment
+        required: true
+        type: choice
+        options:
+          - dev
+          - test
+          - sandbox
+          - prod
   workflow_call:
     inputs:
       environment:
@@ -21,10 +34,6 @@ jobs:
         with:
           aws-region: ${{ vars.AWS_REGION }}
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/DeploymentRole-${{ inputs.environment }}
-      - name: Login to registry
-        uses: aws-actions/amazon-ecr-login@v2
-        with:
-          mask-password: true
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup Node.js
@@ -37,6 +46,7 @@ jobs:
           ENVIRONMENT: ${{ inputs.environment }}
           ORGANIZATION: ${{ vars.ORGANIZATION }}
           SUBSCRIBER: ${{ vars.SUBSCRIBER }}
+          SHARED_ACCOUNT_EMAIL: ${{ vars.SHARED_ACCOUNT_EMAIL }}
           SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
           SLACK_CHANNEL: ${{ vars.SLACK_CHANNEL }}
         run: |
