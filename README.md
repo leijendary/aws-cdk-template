@@ -200,3 +200,19 @@ Name: `$ENVIRONMENT/security`.
   "cloudFront.privateKey": ""
 }
 ```
+
+# Branching Strategy
+
+As you may have noticed, GitHub Actions are also included in this template repository. Each company has their own
+different git workflow, and this is what I think is the fastest for most teams.
+
+- `main` **deploys to dev**. This is ALWAYS updated. The sole purpose of this is for developer's testing.
+- `release/*` **deploys to test**. Whatever is going to be placed here, means that this is a candidate for
+  release. Only used by QA testers. This is where you start tagging.
+- `tags` **deploys to sandbox AND prod**.
+- Branches like `release/*` and `fix/*` should be very small and a PR should be opened to `main`. We still need to do
+  code reviews somehow.
+- Changes from `main` **may** be cherry-picked to `release/*`.
+- `hotfix/*` merges to a `release/*` branch that is created from the latest production tag.
+- When the `release/*` branch that contains the changes in `hotfix/*` is tagged and deployed to production, then the
+  release branch will be merged back to `main`.
