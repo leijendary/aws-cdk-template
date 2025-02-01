@@ -66,7 +66,7 @@ const repositories: Repository[] = [
   },
 ];
 
-export default {
+const env = {
   account,
   region,
   organization,
@@ -80,3 +80,5 @@ export default {
   isProd: environment === "prod",
   repositories,
 };
+
+export default env;
