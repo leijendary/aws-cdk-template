@@ -12,10 +12,11 @@ export class ProdOrganizationalUnit extends CfnOrganizationalUnit {
 
   private createUnit(id: string, name: string) {
     const suffix = name.replace(/[^\p{L}]/gu, "");
-
-    new CfnOrganizationalUnit(this, `${id}-${suffix}`, {
+    const config: CfnOrganizationalUnitProps = {
       name,
       parentId: this.attrId,
-    });
+    };
+
+    new CfnOrganizationalUnit(this, `${id}-${suffix}`, config);
   }
 }

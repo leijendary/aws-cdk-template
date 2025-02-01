@@ -10,18 +10,18 @@ Copy `.env.example` to `.env` and fill up the following details:
 1. `ENVIRONMENT`: The environment where to deploy the stacks.
 2. `ORGANIZATION`: This is mostly used as the domain name.
 3. `SUBSCRIBER`: The email for billing alerts.
-4. `SHARED_ACCOUNT_EMAIL`: The email to be used when creating the `Shared Repository` account.
-5. `SLACK_TOKEN`: The slack auth token used by the alerts to send a message.
-6. `SLACK_CHANNEL`: The slack channel where the alerts should send the message to. This should be the channel identifier.
+4. `SLACK_TOKEN`: The slack auth token used by the alerts to send a message.
+5. `SLACK_CHANNEL`: The slack channel where the alerts should send the message to. This should be the channel identifier.
 
 ## IAM Role:
 
 When creating an IAM role that has access to the CDK for deploying (like GitHub actions), create the following role:
 
-Name: `DeploymentRole-$ENVIRONMENT`.
+1. `BuildRole` on the Deployments OU - under the "Build" account.
+2. `DeploymentRole-$ENVIRONMENT` on each Workload accounts.
 
-1. To access ECR repositories, attach the `AmazonEC2ContainerRegistryPowerUser` permission.
-2. Add the following inline policy and name it `AssumeRoleCDK`:
+To access ECR repositories, attach the `AmazonEC2ContainerRegistryPowerUser` permission. Then add the following inline 
+policy and name it `AssumeRoleCDK`:
 
 ### Policy:
 
@@ -87,19 +87,23 @@ Where `$ENVIRONMENT` can be any of the following:
 
 Example:
 
-`cdk --profile leijendary-dev deploy --all`
+`cdk --profile $AWS_PROFILE_NAME deploy --all`
 
-### Global Stacks
+### Account-specific Stacks
 
-There are global stacks that should be deployed via local execution with a main (preferrably non-root) account first:
+There are global stacks that should be deployed via local execution with a main account first:
 
-1. `BillingStack`
-2. `OrganizationStack`
-3. `RepositoryStack`
+1. `Billing`
+2. `Organization`
+
+Then these are the stacks that you should run in your Build account:
+
+1. `CodeBuild`
+2. `Repository`
 
 Example:
 
-`cdk --profile leijendary-main deploy BillingStack`
+`cdk --profile $AWS_PROFILE_NAME deploy Billing -e`
 
 ## CloudFront Public Keys
 

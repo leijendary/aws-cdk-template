@@ -1,6 +1,3 @@
-import { KeyGroupConstruct } from "@/construct/cloudfront/key-group.construct";
-import { PublicKeyConstruct } from "@/construct/cloudfront/public-key.construct";
-import env from "@/env";
 import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
 import {
   AllowedMethods,
@@ -18,8 +15,11 @@ import { ApplicationLoadBalancer } from "aws-cdk-lib/aws-elasticloadbalancingv2"
 import { HostedZone } from "aws-cdk-lib/aws-route53";
 import { Bucket } from "aws-cdk-lib/aws-s3";
 import { Construct } from "constructs";
+import { KeyGroupConstruct } from "../../construct/cloudfront/key-group.construct";
+import { PublicKeyConstruct } from "../../construct/cloudfront/public-key.construct";
+import env from "../../env";
 
-type S3DistributionConstructProps = {
+export type S3DistributionConstructProps = {
   bucket: Bucket;
   certificate: Certificate;
   hostedZone: HostedZone;
@@ -29,7 +29,7 @@ type S3DistributionConstructProps = {
   };
 };
 
-type AlbDistributionConstructProps = {
+export type AlbDistributionConstructProps = {
   certificate: Certificate;
   hostedZone: HostedZone;
   loadBalancer: ApplicationLoadBalancer;

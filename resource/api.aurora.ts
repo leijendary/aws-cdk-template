@@ -1,9 +1,9 @@
-import { AuroraConstruct, AuroraConstructProps } from "@/construct/aurora.construct";
-import env from "@/env";
 import { SecurityGroup, Vpc } from "aws-cdk-lib/aws-ec2";
 import { Construct } from "constructs";
+import { AuroraConstruct, AuroraConstructProps } from "../construct/aurora.construct";
+import env from "../env";
 
-type ApiAuroraClusterProps = {
+export type ApiAuroraClusterProps = {
   vpc: Vpc;
   securityGroup: SecurityGroup;
 };

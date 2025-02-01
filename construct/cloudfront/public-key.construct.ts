@@ -1,9 +1,9 @@
-import env from "@/env";
 import { CfnOutput } from "aws-cdk-lib";
 import { PublicKey, PublicKeyProps } from "aws-cdk-lib/aws-cloudfront";
 import { Construct } from "constructs";
 import { readFileSync } from "fs";
 import { join } from "path";
+import env from "../../env";
 
 const environment = env.environment;
 

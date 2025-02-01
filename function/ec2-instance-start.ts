@@ -1,10 +1,9 @@
 import { EC2Client, StartInstancesCommand, StartInstancesCommandInput } from "@aws-sdk/client-ec2";
-import { Handler } from "aws-lambda";
 
 const client = new EC2Client();
 const instanceId = process.env.INSTANCE_ID!!;
 
-export const handler: Handler = async () => {
+export async function handler() {
   console.log("Starting", instanceId);
 
   const input: StartInstancesCommandInput = {
@@ -14,4 +13,4 @@ export const handler: Handler = async () => {
   const response = await client.send(command);
 
   console.log("Triggered start command to", response.StartingInstances?.[0].InstanceId);
-};
+}

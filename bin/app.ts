@@ -1,19 +1,20 @@
-import env from "@/env";
-import { AlarmStack } from "@/lib/alarm.stack";
-import { ApiStack } from "@/lib/api.stack";
-import { BillingStack } from "@/lib/billing.stack";
-import { BucketStack } from "@/lib/bucket.stack";
-import { CertificateStack } from "@/lib/certificate.stack";
-import { CloudFrontStack } from "@/lib/cloudfront.stack";
-import { DatabaseStack } from "@/lib/database.stack";
-import { NetworkStack } from "@/lib/network.stack";
-import { OrganizationStack } from "@/lib/organization.stack";
-import { RepositoryStack } from "@/lib/repository.stack";
 import { App, StackProps } from "aws-cdk-lib";
 import "dotenv/config";
 import "source-map-support/register";
+import env from "../env";
+import { AlarmStack } from "../lib/alarm.stack";
+import { ApiStack } from "../lib/api.stack";
+import { BillingStack } from "../lib/billing.stack";
+import { BucketStack } from "../lib/bucket.stack";
+import { CertificateStack } from "../lib/certificate.stack";
+import { CloudFrontStack } from "../lib/cloudfront.stack";
+import { CodeBuildStack } from "../lib/code-build.stack";
+import { DatabaseStack } from "../lib/database.stack";
+import { NetworkStack } from "../lib/network.stack";
+import { OrganizationStack } from "../lib/organization.stack";
+import { RepositoryStack } from "../lib/repository.stack";
 
-const { account, region, environment } = env;
+const { account, region } = env;
 const app = new App();
 const props: StackProps = {
   env: {
@@ -22,19 +23,18 @@ const props: StackProps = {
   },
   crossRegionReferences: true,
 };
-const deploymentRole = `arn:aws:iam::${account}:role/DeploymentRole-${environment}`;
 
 // Billing and Cost
-new BillingStack(app);
+new BillingStack(app, props);
 
 // Organizations
-const { units } = new OrganizationStack(app);
+new OrganizationStack(app, props);
 
-// Docker repositories
-new RepositoryStack(app, {
-  organizationalUnit: units.infrastructure,
-  deploymentRole,
-});
+// CodeBuild
+new CodeBuildStack(app, props);
+
+// Repositories
+new RepositoryStack(app, props);
 
 // Network
 const { vpc, hostedZone, certificate: domainCertificate } = new NetworkStack(app, props);
@@ -78,5 +78,3 @@ new DatabaseStack(app, {
   securityGroup,
   ...props,
 });
-
-app.synth();

@@ -1,7 +1,7 @@
-import env from "@/env";
-import { PublicVpcConstruct } from "@/construct/vpc.construct";
 import { ISecurityGroup, Peer, Port, SecurityGroup, SecurityGroupProps, Vpc } from "aws-cdk-lib/aws-ec2";
 import { Construct } from "constructs";
+import { PublicVpcConstruct } from "../construct/vpc.construct";
+import env from "../env";
 
 export type PublicSecurityGroupProps = {
   vpc: Vpc;

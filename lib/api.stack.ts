@@ -1,23 +1,23 @@
-import { PublicVpcConstruct } from "@/construct/vpc.construct";
-import env from "@/env";
-import { ApiFargateCluster } from "@/resource/api.ecs";
-import { ApiLoadBalancer } from "@/resource/api.load-balancer";
-import { ApiGatewaySecurityGroup } from "@/resource/security-group/api-gateway.security-group";
-import { ApiLoadBalancerSecurityGroup } from "@/resource/security-group/api-loadbalancer.security-group";
-import { ApiSecurityGroup } from "@/resource/security-group/api.security-group";
 import { Stack, StackProps } from "aws-cdk-lib";
 import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
 import { SecurityGroup, Vpc } from "aws-cdk-lib/aws-ec2";
 import { Cluster } from "aws-cdk-lib/aws-ecs";
 import { ApplicationListener, ApplicationLoadBalancer } from "aws-cdk-lib/aws-elasticloadbalancingv2";
 import { Construct } from "constructs";
+import { PublicVpcConstruct } from "../construct/vpc.construct";
+import env from "../env";
+import { ApiFargateCluster } from "../resource/api.ecs";
+import { ApiLoadBalancer } from "../resource/api.load-balancer";
+import { ApiGatewaySecurityGroup } from "../resource/security-group/api-gateway.security-group";
+import { ApiLoadBalancerSecurityGroup } from "../resource/security-group/api-loadbalancer.security-group";
+import { ApiSecurityGroup } from "../resource/security-group/api.security-group";
 
-type ApiStackProps = StackProps & {
+export type ApiStackProps = StackProps & {
   vpc: PublicVpcConstruct;
   certificate: Certificate;
 };
 
-const { environment } = env;
+const environment = env.environment;
 
 export class ApiStack extends Stack {
   loadBalancerSecurityGroup: SecurityGroup;

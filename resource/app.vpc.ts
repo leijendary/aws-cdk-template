@@ -1,8 +1,8 @@
-import { PublicVpcConstruct, PublicVpcConstructProps } from "@/construct/vpc.construct";
-import env from "@/env";
 import { Construct } from "constructs";
+import { PublicVpcConstruct, PublicVpcConstructProps } from "../construct/vpc.construct";
+import env from "../env";
 
-const { environment } = env;
+const environment = env.environment;
 
 export class AppVpc extends PublicVpcConstruct {
   constructor(scope: Construct) {

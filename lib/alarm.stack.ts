@@ -1,18 +1,16 @@
-import env from "@/env";
 import { RemovalPolicy, Stack, StackProps } from "aws-cdk-lib";
+import { Architecture } from "aws-cdk-lib/aws-lambda";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
 import { Construct } from "constructs";
-
-type AlarmStackProps = StackProps;
+import env from "../env";
 
 const { environment, slack } = env;
+const { token, channel } = slack;
 
 export class AlarmStack extends Stack {
-  constructor(scope: Construct, props: AlarmStackProps) {
-    const id = `AlarmStack-${environment}`;
-
-    super(scope, id, props);
+  constructor(scope: Construct, props: StackProps) {
+    super(scope, `Alarm-${environment}`, props);
 
     this.createNotifier();
   }
@@ -21,9 +19,10 @@ export class AlarmStack extends Stack {
     const lambda = new NodejsFunction(this, `AlarmNotifier-${environment}`, {
       functionName: `alarm-notifier-${environment}`,
       entry: "function/alarm-notifier.ts",
+      architecture: Architecture.ARM_64,
       environment: {
-        SLACK_TOKEN: slack.token,
-        SLACK_CHANNEL: slack.channel,
+        SLACK_TOKEN: token,
+        SLACK_CHANNEL: channel,
       },
     });
 

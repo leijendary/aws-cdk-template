@@ -1,11 +1,11 @@
-import { Handler } from "aws-lambda";
+import { CloudWatchAlarmEvent } from "aws-lambda";
 
-export const handler: Handler = async (event) => {
+export async function handler(event: CloudWatchAlarmEvent) {
   console.log("Event", event);
 
-  const alarmName = event["alarmData"]["alarmName"];
-  const state = event["alarmData"]["state"];
-  const reasonData = JSON.parse(state["reasonData"]);
+  const alarmName = event.alarmData.alarmName;
+  const state = event.alarmData.state;
+  const reasonData = JSON.parse(state.reasonData!!);
   const count = parseInt(reasonData["recentDatapoints"][0]);
   const startDate = formatToDate(reasonData["startDate"]);
   const timestamp = formatToDate(state["timestamp"]);
@@ -29,7 +29,7 @@ export const handler: Handler = async (event) => {
   } catch (error) {
     console.error(error);
   }
-};
+}
 
 function formatToDate(value: string): string {
   const date = new Date(value);

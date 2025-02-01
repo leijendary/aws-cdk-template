@@ -1,10 +1,9 @@
 import { RDSClient, StopDBClusterCommand, StopDBClusterCommandInput } from "@aws-sdk/client-rds";
-import { Handler } from "aws-lambda";
 
 const client = new RDSClient();
 const identifier = process.env.IDENTIFIER!!;
 
-export const handler: Handler = async () => {
+export async function handler() {
   console.log("Stopping", identifier);
 
   const input: StopDBClusterCommandInput = {
@@ -14,4 +13,4 @@ export const handler: Handler = async () => {
   const response = await client.send(command);
 
   console.log("Triggered stop command to", response.DBCluster?.DBClusterIdentifier);
-};
+}

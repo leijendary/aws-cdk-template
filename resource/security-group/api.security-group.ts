@@ -1,9 +1,9 @@
-import { PeerSecurityGroup, PeerSecurityGroupProps } from "@/construct/security-group.construct";
-import env from "@/env";
 import { SecurityGroup, Vpc } from "aws-cdk-lib/aws-ec2";
 import { Construct } from "constructs";
+import { PeerSecurityGroup, PeerSecurityGroupProps } from "../../construct/security-group.construct";
+import env from "../../env";
 
-type ApiSecurityGroupProps = {
+export type ApiSecurityGroupProps = {
   vpc: Vpc;
   peer: SecurityGroup;
 };

@@ -1,13 +1,13 @@
-import { PublicVpcConstruct } from "@/construct/vpc.construct";
-import env from "@/env";
-import { ApiAuroraCluster } from "@/resource/api.aurora";
-import { ApiAuroraSecurityGroup } from "@/resource/security-group/api-aurora.security-group";
 import { Stack, StackProps } from "aws-cdk-lib";
 import { SecurityGroup, Vpc } from "aws-cdk-lib/aws-ec2";
 import { DatabaseCluster } from "aws-cdk-lib/aws-rds";
 import { Construct } from "constructs";
+import { PublicVpcConstruct } from "../construct/vpc.construct";
+import env from "../env";
+import { ApiAuroraCluster } from "../resource/api.aurora";
+import { ApiAuroraSecurityGroup } from "../resource/security-group/api-aurora.security-group";
 
-type DatabaseStackProps = StackProps & {
+export type DatabaseStackProps = StackProps & {
   vpc: PublicVpcConstruct;
   securityGroup: SecurityGroup;
 };

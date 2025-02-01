@@ -1,4 +1,3 @@
-import env, { isProd } from "@/env";
 import { RemovalPolicy } from "aws-cdk-lib";
 import {
   AmazonLinuxCpuType,
@@ -12,7 +11,7 @@ import {
   IpAddresses,
   LookupMachineImage,
   NatInstanceProps,
-  NatInstanceProvider,
+  NatInstanceProviderV2,
   Peer,
   Port,
   SecurityGroup,
@@ -23,11 +22,13 @@ import {
 import { Rule, Schedule } from "aws-cdk-lib/aws-events";
 import { LambdaFunction } from "aws-cdk-lib/aws-events-targets";
 import { Effect, ManagedPolicy, PolicyStatement } from "aws-cdk-lib/aws-iam";
+import { Architecture } from "aws-cdk-lib/aws-lambda";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
 import { Construct } from "constructs";
+import env from "../env";
 
-const { environment, config } = env;
+const { account, region, environment, config, isProd } = env;
 const { cidrBlock } = config;
 
 export type PublicVpcConstructProps = {
@@ -35,7 +36,7 @@ export type PublicVpcConstructProps = {
 };
 
 export class PublicVpcConstruct extends Vpc {
-  natGatewayProvider?: NatInstanceProvider;
+  natGatewayProvider?: NatInstanceProviderV2;
   bastion?: Instance;
 
   constructor(scope: Construct, id: string, props: PublicVpcConstructProps) {
@@ -43,7 +44,7 @@ export class PublicVpcConstruct extends Vpc {
     const natGatewayProvider = getNatGatewayProvider();
     const config: VpcProps = {
       vpcName: `${name}-${environment}`,
-      maxAzs: isProd ? 2 : 1,
+      maxAzs: 2,
       natGateways: isProd ? 2 : 1,
       ipAddresses: IpAddresses.cidr(cidrBlock),
       subnetConfiguration: [
@@ -119,11 +120,12 @@ export class PublicVpcConstruct extends Vpc {
     const policyStatement = new PolicyStatement({
       effect: Effect.ALLOW,
       actions: ["ec2:StartInstances"],
-      resources: [`arn:aws:ec2:${this.stack.region}:${this.stack.account}:instance/${instanceId}`],
+      resources: [`arn:aws:ec2:${region}:${account}:instance/${instanceId}`],
     });
     const lambda = new NodejsFunction(this, `Ec2InstanceStartFunction-${name}-${environment}`, {
       functionName: `${name}-${environment}-ec2-instance-start`,
       entry: "function/ec2-instance-start.ts",
+      architecture: Architecture.ARM_64,
       environment: {
         INSTANCE_ID: instanceId,
       },
@@ -154,6 +156,7 @@ export class PublicVpcConstruct extends Vpc {
     const lambda = new NodejsFunction(this, `Ec2InstanceStopFunction-${name}-${environment}`, {
       functionName: `${name}-${environment}-ec2-instance-stop`,
       entry: "function/ec2-instance-stop.ts",
+      architecture: Architecture.ARM_64,
       environment: {
         INSTANCE_ID: instanceId,
       },
@@ -190,5 +193,5 @@ function getNatGatewayProvider() {
     }),
   };
 
-  return new NatInstanceProvider(config);
+  return new NatInstanceProviderV2(config);
 }

@@ -1,9 +1,9 @@
-import env, { isProd } from "@/env";
 import { Duration, RemovalPolicy } from "aws-cdk-lib";
 import { BlockPublicAccess, Bucket, BucketProps, HttpMethods, LifecycleRule } from "aws-cdk-lib/aws-s3";
 import { Construct } from "constructs";
+import env from "../env";
 
-const { environment, config, organization } = env;
+const { environment, config, organization, isProd } = env;
 const { domainName } = config;
 
 export class ApiBucket extends Bucket {

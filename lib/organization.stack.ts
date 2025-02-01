@@ -1,7 +1,7 @@
-import { ProdOrganizationalUnit } from "@/construct/organizational-unit.construct";
-import { Stack } from "aws-cdk-lib";
-import { CfnOrganization, CfnOrganizationalUnit } from "aws-cdk-lib/aws-organizations";
+import { Stack, StackProps } from "aws-cdk-lib";
+import { CfnOrganization, CfnOrganizationalUnit, CfnOrganizationalUnitProps } from "aws-cdk-lib/aws-organizations";
 import { Construct } from "constructs";
+import { ProdOrganizationalUnit } from "../construct/organizational-unit.construct";
 
 export const organizationalUnits = {
   security: "Security",
@@ -13,60 +13,53 @@ export const organizationalUnits = {
   policyStaging: "Policy Staging",
 };
 
-type OrganizationStackUnits = {
-  [key in keyof typeof organizationalUnits]: CfnOrganizationalUnit;
-};
-
 /**
  * Reference: https://docs.aws.amazon.com/whitepapers/latest/organizing-your-aws-environment/recommended-ous-and-accounts.html
  */
 export class OrganizationStack extends Stack {
   organization: CfnOrganization;
-  units: OrganizationStackUnits;
 
-  constructor(scope: Construct) {
-    super(scope, "Organization");
+  constructor(scope: Construct, props: StackProps) {
+    super(scope, "Organization", props);
 
     // Enable organizations in the current account
-    this.enable();
+    this.organization = new CfnOrganization(this, "Organization");
 
     // Security related services, resources, and access points. Should be managed by the security team.
-    this.units.security = this.createProdUnit(organizationalUnits.security);
-    // Shared cloud infrastructure services like networking, repositories, and IT services.
-    this.units.infrastructure = this.createProdUnit(organizationalUnits.infrastructure);
+    this.createProdUnit(organizationalUnits.security);
+    // Shared cloud infrastructure services like networking and IT services.
+    this.createProdUnit(organizationalUnits.infrastructure);
     // AWS accounts for software lifecycle. Account should be mapped to services, rather than teams.
-    this.units.workloads = this.createProdUnit(organizationalUnits.workloads);
-    // Use isolated AWS accounts for CI/CD. Accounts under this OU should match the Workloads OU.
-    this.units.deployments = this.createProdUnit(organizationalUnits.deployments);
+    this.createProdUnit(organizationalUnits.workloads);
+    // Use isolated AWS accounts for CI/CD and repositories.
+    this.createUnit(organizationalUnits.deployments);
     // Individual technologies that requires access. For learning and innovation. Should be detached from
     // the internal network.
-    this.units.sandbox = this.createUnit(organizationalUnits.sandbox);
+    this.createUnit(organizationalUnits.sandbox);
     // To organize suspended accounts.
-    this.units.suspended = this.createUnit(organizationalUnits.suspended);
+    this.createUnit(organizationalUnits.suspended);
 
-    this.units.policyStaging = this.policyStaging();
+    this.policyStaging();
   }
 
-  private enable() {
-    this.organization = new CfnOrganization(this, "Organization");
-  }
-
-  private createProdUnit(name: string) {
+  private createProdUnit(name: string, parentId: string = "r-fywf") {
     const id = name.replace(/[^\p{L}]/gu, "");
-
-    return new ProdOrganizationalUnit(this, `${id}OrganizationalUnit`, {
-      name,
-      parentId: this.organization.attrId,
-    });
-  }
-
-  private createUnit(name: string, parentId: string = this.organization.attrId) {
-    const id = name.replace(/[^\p{L}]/gu, "");
-
-    return new CfnOrganizationalUnit(this, `${id}OrganizationalUnit`, {
+    const config: CfnOrganizationalUnitProps = {
       name,
       parentId,
-    });
+    };
+
+    return new ProdOrganizationalUnit(this, `${id}OrganizationalUnit`, config);
+  }
+
+  private createUnit(name: string, parentId: string = "r-fywf") {
+    const id = name.replace(/[^\p{L}]/gu, "");
+    const config: CfnOrganizationalUnitProps = {
+      name,
+      parentId,
+    };
+
+    return new CfnOrganizationalUnit(this, `${id}OrganizationalUnit`, config);
   }
 
   /**
@@ -86,10 +79,11 @@ export class OrganizationStack extends Stack {
 
   private createPolicyStagingUnit(name: string, parentId: string) {
     const id = name.replace(/[^\p{L}]/gu, "");
-
-    return new CfnOrganizationalUnit(this, `PolicyStaging${id}OrganizationalUnit`, {
+    const config: CfnOrganizationalUnitProps = {
       name,
       parentId,
-    });
+    };
+
+    return new CfnOrganizationalUnit(this, `PolicyStaging${id}OrganizationalUnit`, config);
   }
 }

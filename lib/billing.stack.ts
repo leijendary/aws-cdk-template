@@ -1,21 +1,21 @@
-import env from "@/env";
-import { Stack } from "aws-cdk-lib";
-import { CfnBudget } from "aws-cdk-lib/aws-budgets";
-import { CfnAnomalyMonitor, CfnAnomalySubscription } from "aws-cdk-lib/aws-ce";
+import { Stack, StackProps } from "aws-cdk-lib";
+import { CfnBudget, CfnBudgetProps } from "aws-cdk-lib/aws-budgets";
+import { CfnAnomalyMonitor, CfnAnomalySubscription, CfnAnomalySubscriptionProps } from "aws-cdk-lib/aws-ce";
 import { Construct } from "constructs";
+import env from "../env";
 
 const { subscriber } = env;
 
 export class BillingStack extends Stack {
-  constructor(scope: Construct) {
-    super(scope, "Billing");
+  constructor(scope: Construct, props: StackProps) {
+    super(scope, "Billing", props);
 
     this.budgets();
     this.anomalyMonitor();
   }
 
   private budgets() {
-    new CfnBudget(this, "BudgetMax1Dollar", {
+    const config: CfnBudgetProps = {
       budget: {
         budgetName: "$1 Max Budget",
         budgetType: "COST",
@@ -53,7 +53,9 @@ export class BillingStack extends Stack {
           ],
         },
       ],
-    });
+    };
+
+    new CfnBudget(this, "BudgetMax1Dollar", config);
   }
 
   private anomalyMonitor() {
@@ -62,8 +64,7 @@ export class BillingStack extends Stack {
       monitorType: "DIMENSIONAL",
       monitorDimension: "SERVICE",
     });
-
-    new CfnAnomalySubscription(this, "Daily100PercentThreshold", {
+    const config: CfnAnomalySubscriptionProps = {
       subscriptionName: "Daily 100% threshold",
       thresholdExpression: JSON.stringify({
         Dimensions: {
@@ -80,6 +81,8 @@ export class BillingStack extends Stack {
           type: "EMAIL",
         },
       ],
-    });
+    };
+
+    new CfnAnomalySubscription(this, "Daily100PercentThreshold", config);
   }
 }
